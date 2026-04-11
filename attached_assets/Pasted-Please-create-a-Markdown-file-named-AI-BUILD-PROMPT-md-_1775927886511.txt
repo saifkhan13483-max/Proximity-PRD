@@ -1,0 +1,33 @@
+Please create a Markdown file named AI_BUILD_PROMPT.md for this project.
+
+I will attach the PRD file for this project. Use it as the single source of truth. Every prompt you write must align precisely with the PRD's defined tech stack, architecture, design system, features, user flows, data models, and technical scope. Do not assume anything that is not in the PRD.
+
+The file must contain a complete, sequential, step-by-step prompt workflow for building the entire application using the Replit AI Coding Agent — from blank project to fully deployed production app.
+
+Structure the workflow in these universal development phases, and adapt each one to match exactly what the PRD specifies:
+
+Project Setup & Architecture — Initialize the project, install all dependencies from the PRD, configure the build tool, set up the full folder structure, environment files, linting, and formatting
+Design System & Config — Configure the styling framework with all brand tokens (colors, typography, spacing, gradients, border radius) defined in the PRD — never hardcoded inline
+Reusable UI Component Library — Build every primitive component the PRD requires (buttons, cards, inputs, modals, badges, toasts, etc.) with all variants defined
+Layout & Navigation Components — Build all global layout pieces: header/navbar, footer, page wrappers, and any persistent UI elements defined in the PRD
+Data & Content Layer — Create all static data files or API service files for every content type in the PRD (pages, listings, FAQs, testimonials, products, users, etc.)
+State Management — Set up all global and local state as defined in the PRD's architecture (stores, context, or server state)
+Page & Feature Development — One prompt per page or major feature module, built in dependency order as defined in the PRD
+Backend & Database (if applicable) — Schema design, API routes, server logic, and data validation per the PRD's backend requirements
+Authentication & Authorization (if applicable) — User registration, login, session management, and role-based access per the PRD
+Integrations & Third-Party Services (if applicable) — Payment gateways, CMS, analytics, email, maps, or any external service the PRD references
+Animations & Micro-interactions — Implement all motion and interaction behaviors specified in the PRD
+Forms & Validation — Build and wire all forms with the validation library and rules the PRD specifies
+SEO & Metadata — Meta tags, Open Graph, schema markup, sitemap, and any SEO requirements in the PRD
+Performance Optimization — Code splitting, lazy loading, image optimization, caching, and bundle analysis
+Testing & QA — Responsiveness across all breakpoints, accessibility compliance, cross-browser checks, and bug fixing prompts
+Deployment & Production Readiness — Deploy to the target platform, verify performance scores, confirm all PRD acceptance criteria are met
+Requirements for every prompt in the file:
+
+Written in strict sequential order — each prompt builds directly on the previous
+Ready to paste directly into Replit AI Coding Agent with zero editing needed
+Explicitly references names, paths, components, and values from the attached PRD
+Includes a review-and-fix prompt after each phase before moving to the next
+Covers edge cases, bug fixing, UI polish, and scalability at each stage
+Uses clean Markdown formatting: numbered phases, clear subheadings, and each prompt inside a code block for easy copying
+Do not write any actual code. Only create the prompt workflow file.
