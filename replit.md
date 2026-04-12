@@ -17,7 +17,10 @@ A high-end, premium marketing website for Proximity Credit Repair. Built with Re
 ```
 proximity/
 ├── backend/
-│   └── server.js
+│   ├── server.js
+│   ├── AI_BUILD_PROMPT.md
+│   ├── PRD.md
+│   └── package.json
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
@@ -38,9 +41,13 @@ proximity/
 │   ├── tailwind.config.js
 │   ├── postcss.config.js
 │   ├── tsconfig.json
-│   └── tsconfig.node.json
-├── package.json              # Root — shared deps + scripts
-└── node_modules/
+│   ├── tsconfig.node.json
+│   ├── .env.development
+│   ├── .env.production
+│   └── .env.staging
+├── .gitignore
+├── README.md
+└── replit.md
 ```
 
 ## Design System
@@ -70,8 +77,8 @@ proximity/
 
 ## Running the App
 ```
-npm run dev    # Dev server at localhost:5000
-npm run build  # Production build
+npm run dev --prefix frontend    # Dev server at localhost:5000
+npm run build --prefix frontend  # Production build
 ```
 
 ## Notes
