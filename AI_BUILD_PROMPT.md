@@ -358,7 +358,7 @@ Props (from `ButtonProps` in `src/types/component-props.ts`):
 - `onClick?`: () => void
 - `disabled?`: boolean
 - `type?`: 'button' | 'submit' | 'reset' — defaults to 'button'
-- `href?`: string (if provided, render as `motion.a` instead of `motion.button`)
+- `href?`: string (if provided, render as a link instead of a button — see routing note below)
 
 Variant styles (using Tailwind token names from tailwind.config.js — NEVER hardcoded hex values):
 - `primary`: `bg-gold-gradient text-white rounded-pill font-heading font-bold` + `shadow-gold-md` on hover
@@ -370,7 +370,12 @@ Size styles:
 - `md`: `px-7 py-3 text-base`
 - `lg`: `px-9 py-4 text-lg`
 
-Wrap in Framer Motion `motion.button` (or `motion.a` if href is provided).
+Routing note for the `href` prop:
+- If `href` starts with `http`, `https`, `mailto:`, or `tel:` → render as `motion.a` with `target="_blank" rel="noopener noreferrer"` where appropriate
+- If `href` is an internal path (starts with `/`) → render as a Framer Motion-enhanced React Router Link: create `const MotionLink = motion(Link)` (import `Link` from `react-router-dom`) and render `<MotionLink to={href}>`. This preserves SPA routing without full page reloads.
+- Default (no href): render as `motion.button`
+
+Wrap in Framer Motion `motion.button`, `MotionLink`, or `motion.a` based on the routing note above.
 Apply: `whileHover={{ scale: 1.03 }}` and `whileTap={{ scale: 0.97 }}`.
 For the primary variant, add a CSS class `btn-glow-pulse` that applies a gold box-shadow keyframe animation on hover. Define this keyframe in `src/styles/globals.css`:
   @keyframes goldGlow { 0%, 100% { box-shadow: 0 0 12px rgba(184,146,74,0.4); } 50% { box-shadow: 0 0 28px rgba(184,146,74,0.8); } }
@@ -788,7 +793,7 @@ Create `src/pages/NotFound.tsx` fully now:
 - Large "404" in `.gold-gradient-text font-heading font-black text-h1`
 - Heading: "Page Not Found" in white
 - Subtext: "The page you're looking for doesn't exist." in `text-muted-text`
-- Primary `Button` component linking href="/" : "Back to Home"
+- Primary `Button` component wrapped in `<Link to="/">` from react-router-dom (do NOT use Button's `href` prop directly here — wrap the Button in a Link to preserve SPA navigation): `<Link to="/"><Button variant="primary" size="lg">Back to Home</Button></Link>`
 
 Update `src/main.tsx` to render `<App />`.
 
@@ -889,7 +894,7 @@ In the Proximity Credit Repair project, create the following config files:
    Export a `siteMetadata` object typed as `SiteMetadata`:
    - siteTitle: 'Proximity Credit Repair'
    - siteDescription: 'Expert credit repair services that deliver real results. Join 10,000+ clients who have improved their credit scores with Proximity Credit Repair.'
-   - siteUrl: `${import.meta.env.VITE_SITE_URL || 'https://proximitycreditrepair.replit.app'}`
+   - siteUrl: `${import.meta.env.VITE_SITE_URL || 'https://proximity-credit-repair.replit.app'}`
    - ogImage: '/og-image.jpg'
    - twitterHandle: '@proximitycredit'
 
@@ -1231,7 +1236,7 @@ In the Proximity Credit Repair project, build two more Home page sections:
    - Mobile: `flex flex-col gap-8`
    - Each step: gold numbered circle `w-12 h-12 rounded-full bg-gold-gradient flex items-center justify-center font-heading font-black text-white text-sm`, then title in `font-heading font-semibold`, then description in `font-body text-caption text-muted-text`
    - Each step animates in using `useInView` with staggered delay (0.15s × step index)
-   - "View Full Process" `Button` variant="secondary" centered below, linking to `/how-it-works`
+   - "View Full Process" `Button` variant="secondary" centered below: wrap in `<Link to="/how-it-works">` from react-router-dom for SPA navigation
 ```
 
 ### 7.3 — Home Page: Testimonials Slider & Final CTA Band
