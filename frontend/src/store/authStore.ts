@@ -8,6 +8,7 @@ export interface AuthUser {
   plan: string
   role: 'user' | 'admin'
   createdAt: string
+  creditScore?: number | null
 }
 
 interface AuthStore {
