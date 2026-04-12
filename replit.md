@@ -15,20 +15,32 @@ A high-end, premium marketing website for Proximity Credit Repair. Built with Re
 
 ## Project Structure
 ```
-src/
-├── components/
-│   ├── layout/     AppLayout, Navbar, Footer, Section, PageWrapper, SEOHead
-│   ├── ui/         Button, Card, Badge, Input, Select, Textarea, Toast, SectionLabel, etc.
-│   └── sections/   HeroSection, ServicesPreview, HowItWorksStrip, TestimonialsSlider, FinalCTABand
-├── pages/          Home, About, Services, HowItWorks, Testimonials, FAQ, Contact, NotFound
-├── data/           services.ts, testimonials.ts, faqs.ts, stats.ts, team.ts
-├── config/         siteMetadata.ts, navigation.ts, theme.ts, site.ts
-├── hooks/          useCountUp, useMediaQuery, useScrollPosition
-├── store/          uiStore.ts, formStore.ts
-├── services/       contactService.ts (simulated, ready for real API)
-├── lib/            animations.ts, cn.ts, utils.ts, validators.ts
-├── types/          index.ts, component-props.ts
-└── styles/         globals.css (Tailwind + custom utilities)
+proximity/
+├── backend/
+│   └── server.js
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── layout/     AppLayout, Navbar, Footer, Section, PageWrapper, SEOHead
+│   │   │   ├── ui/         Button, Card, Badge, Input, Select, Textarea, Toast, etc.
+│   │   │   └── sections/   HeroSection, ServicesPreview, HowItWorksStrip, etc.
+│   │   ├── pages/          Home, About, Services, HowItWorks, Testimonials, FAQ, Contact, NotFound
+│   │   ├── data/           services.ts, testimonials.ts, faqs.ts, stats.ts, team.ts
+│   │   ├── config/         siteMetadata.ts, navigation.ts, theme.ts, site.ts
+│   │   ├── hooks/          useCountUp, useMediaQuery, useScrollPosition
+│   │   ├── store/          uiStore.ts, formStore.ts
+│   │   ├── services/       contactService.ts
+│   │   ├── lib/            animations.ts, cn.ts, utils.ts, validators.ts
+│   │   ├── types/          index.ts, component-props.ts
+│   │   └── styles/         globals.css
+│   ├── index.html
+│   ├── vite.config.ts
+│   ├── tailwind.config.js
+│   ├── postcss.config.js
+│   ├── tsconfig.json
+│   └── tsconfig.node.json
+├── package.json              # Root — shared deps + scripts
+└── node_modules/
 ```
 
 ## Design System

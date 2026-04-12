@@ -4,11 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "lint": "eslint src/ --ext .ts,.tsx",
-    "typecheck": "tsc --noEmit"
+    "dev": "vite frontend",
+    "build": "tsc -p frontend/tsconfig.json && vite build frontend",
+    "preview": "vite preview frontend",
+    "lint": "eslint frontend/src/ --ext .ts,.tsx",
+    "typecheck": "tsc -p frontend/tsconfig.json --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
