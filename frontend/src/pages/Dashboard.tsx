@@ -2,19 +2,12 @@ import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Shield, TrendingUp, FileText, BarChart2, LogOut,
-  User, CheckCircle, Clock, Star, ArrowRight, Bell, Zap, CreditCard,
-  BookOpen, Handshake, ShieldCheck, CalendarDays,
+  CheckCircle, Clock, Star, ArrowRight, Bell, Zap, CreditCard,
+  BookOpen, Handshake, ShieldCheck, CalendarDays, Mail, Award, ChevronRight,
 } from 'lucide-react'
 import { useAuthStore } from '@store/authStore'
 import { plans } from '@data/plans'
 import ProximityLogo from '@components/ui/ProximityLogo'
-
-const STAT_CARDS = [
-  { label: 'Credit Score', value: '—', sub: 'Link your report to track', icon: TrendingUp, color: 'from-gold-primary/20 to-gold-dark/10' },
-  { label: 'Disputes Filed', value: '0', sub: 'No disputes yet', icon: FileText, color: 'from-blue-500/10 to-blue-600/5' },
-  { label: 'Items Resolved', value: '0', sub: 'Keep going!', icon: CheckCircle, color: 'from-emerald-500/10 to-emerald-600/5' },
-  { label: 'Days Active', value: '1', sub: 'Member since today', icon: Clock, color: 'from-purple-500/10 to-purple-600/5' },
-]
 
 const ALL_ACTIONS = {
   creditAnalysis: { label: 'Credit Analysis', desc: 'Full 3-bureau report review', icon: BarChart2, href: '/services#credit-analysis' },
@@ -32,14 +25,10 @@ function getPlanActions(plan: string) {
   const { creditAnalysis, disputeFiling, scoreMonitoring, debtValidation,
     educationalResources, creditorNegotiation, identityProtection,
     bookConsultation, advisorSession } = ALL_ACTIONS
-  if (plan === 'VIP Plan')
-    return [disputeFiling, creditorNegotiation, identityProtection, advisorSession]
-  if (plan === 'Premium Plan')
-    return [disputeFiling, creditorNegotiation, educationalResources, advisorSession]
-  if (plan === 'Standard Plan')
-    return [scoreMonitoring, debtValidation, educationalResources, bookConsultation]
-  if (plan === 'Basic Plan')
-    return [creditAnalysis, disputeFiling, bookConsultation, scoreMonitoring]
+  if (plan === 'VIP Plan') return [disputeFiling, creditorNegotiation, identityProtection, advisorSession]
+  if (plan === 'Premium Plan') return [disputeFiling, creditorNegotiation, educationalResources, advisorSession]
+  if (plan === 'Standard Plan') return [scoreMonitoring, debtValidation, educationalResources, bookConsultation]
+  if (plan === 'Basic Plan') return [creditAnalysis, disputeFiling, bookConsultation, scoreMonitoring]
   return [creditAnalysis, disputeFiling, scoreMonitoring, bookConsultation]
 }
 
@@ -51,9 +40,96 @@ const PLAN_BENEFITS: Record<string, string[]> = {
   'VIP Plan': ['Unlimited advisor access', 'Identity theft protection', '72-hour dispute processing', 'Satisfaction guarantee'],
 }
 
+const PLAN_TIER_COLORS: Record<string, string> = {
+  'Free Consultation': 'text-white/50 border-white/20 bg-white/5',
+  'Basic Plan': 'text-blue-400 border-blue-400/30 bg-blue-400/10',
+  'Standard Plan': 'text-emerald-400 border-emerald-400/30 bg-emerald-400/10',
+  'Premium Plan': 'text-gold-primary border-gold-primary/30 bg-gold-primary/10',
+  'VIP Plan': 'text-gold-primary border-gold-primary/50 bg-gold-primary/15',
+}
+
+function getScoreLabel(score: number | null) {
+  if (!score) return { label: 'Not linked', color: '#ffffff30' }
+  if (score >= 800) return { label: 'Exceptional', color: '#10b981' }
+  if (score >= 740) return { label: 'Very Good', color: '#22c55e' }
+  if (score >= 670) return { label: 'Good', color: '#eab308' }
+  if (score >= 580) return { label: 'Fair', color: '#f97316' }
+  return { label: 'Poor', color: '#ef4444' }
+}
+
+function CreditScoreRing({ score }: { score: number | null }) {
+  const size = 120
+  const strokeWidth = 9
+  const radius = (size - strokeWidth) / 2
+  const circumference = 2 * Math.PI * radius
+
+  const min = 300
+  const max = 850
+  const capped = score ? Math.min(Math.max(score, min), max) : min
+  const progress = score ? (capped - min) / (max - min) : 0
+  const dashOffset = circumference * (1 - progress * 0.75)
+  const rotation = -225
+  const { label, color } = getScoreLabel(score)
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="rotate-0">
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke="#ffffff08"
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeDasharray={`${circumference * 0.75} ${circumference * 0.25}`}
+            strokeDashoffset={0}
+            transform={`rotate(${rotation} ${size / 2} ${size / 2})`}
+          />
+          <motion.circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke={color}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeDasharray={`${circumference * 0.75} ${circumference * 0.25}`}
+            initial={{ strokeDashoffset: circumference * 0.25 + circumference * 0.75 }}
+            animate={{ strokeDashoffset: dashOffset }}
+            transition={{ duration: 1.2, ease: 'easeOut', delay: 0.3 }}
+            transform={`rotate(${rotation} ${size / 2} ${size / 2})`}
+            style={{ filter: score ? `drop-shadow(0 0 6px ${color}88)` : 'none' }}
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="font-heading font-black text-2xl text-white leading-none">
+            {score ?? '—'}
+          </span>
+          <span className="font-body text-[10px] text-white/40 mt-0.5">FICO Score</span>
+        </div>
+      </div>
+      <span className="font-body text-xs font-semibold mt-1" style={{ color }}>
+        {label}
+      </span>
+    </div>
+  )
+}
+
+function getInitials(name: string) {
+  return name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase()
+}
+
+function getDaysActive(createdAt?: string) {
+  if (!createdAt) return 1
+  const diff = Date.now() - new Date(createdAt).getTime()
+  return Math.max(1, Math.floor(diff / (1000 * 60 * 60 * 24)))
+}
+
 function fadeUp(delay = 0) {
   return {
-    initial: { opacity: 0, y: 20 },
+    initial: { opacity: 0, y: 22 },
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.45, delay, ease: 'easeOut' },
   }
@@ -72,18 +148,52 @@ export default function Dashboard() {
     ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     : 'Recently'
 
+  const daysActive = getDaysActive(user?.createdAt)
   const currentPlan = user?.plan || 'Free Consultation'
   const benefits = PLAN_BENEFITS[currentPlan] || []
-  const isUpgradeable = currentPlan === 'Free Consultation' || currentPlan === 'Basic Plan'
+  const isUpgradeable = currentPlan !== 'VIP Plan'
   const quickActions = getPlanActions(currentPlan)
+  const planTierClass = PLAN_TIER_COLORS[currentPlan] || PLAN_TIER_COLORS['Free Consultation']
 
   const matchedPlan = plans.find((p) => `${p.name} Plan` === currentPlan)
   const nextPlan = matchedPlan
     ? plans[Math.min(plans.indexOf(matchedPlan) + 1, plans.length - 1)]
     : plans[0]
 
+  const creditScore = user?.creditScore ?? null
+  const initials = user?.name ? getInitials(user.name) : 'U'
+  const firstName = user?.name?.split(' ')[0] || 'Client'
+
+  const statCards = [
+    {
+      label: 'Disputes Filed',
+      value: '0',
+      sub: 'No disputes yet',
+      icon: FileText,
+      color: 'from-blue-500/10 to-blue-600/5',
+      iconColor: 'text-blue-400',
+    },
+    {
+      label: 'Items Resolved',
+      value: '0',
+      sub: 'Keep going!',
+      icon: CheckCircle,
+      color: 'from-emerald-500/10 to-emerald-600/5',
+      iconColor: 'text-emerald-400',
+    },
+    {
+      label: 'Days Active',
+      value: String(daysActive),
+      sub: `Since ${memberSince}`,
+      icon: Clock,
+      color: 'from-purple-500/10 to-purple-600/5',
+      iconColor: 'text-purple-400',
+    },
+  ]
+
   return (
     <div className="min-h-screen bg-[#080808]">
+      {/* Top Nav */}
       <div className="border-b border-gold-primary/15 bg-[#0d0d0d]/90 backdrop-blur-md sticky top-0 z-30">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -109,83 +219,126 @@ export default function Dashboard() {
       </div>
 
       <div className="container mx-auto px-4 py-8 max-w-5xl">
-        <motion.div {...fadeUp(0)} className="mb-6">
-          <div className="flex items-start gap-4 bg-[#111111] border border-gold-primary/20 rounded-2xl p-6">
-            <div className="w-14 h-14 rounded-2xl bg-gold-gradient flex items-center justify-center flex-shrink-0 shadow-gold-sm">
-              <User size={24} className="text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h2 className="font-heading text-xl font-bold text-white truncate">
-                Welcome back, {user?.name?.split(' ')[0] || 'Client'}!
-              </h2>
-              <p className="font-body text-white/40 text-sm mt-0.5 truncate">{user?.email}</p>
-              <div className="flex flex-wrap items-center gap-3 mt-3">
-                <span className="inline-flex items-center gap-1.5 bg-gold-primary/15 border border-gold-primary/30 rounded-full px-3 py-1 text-gold-primary font-body text-xs font-semibold">
-                  <Shield size={11} /> {currentPlan}
-                </span>
-                <span className="font-body text-white/30 text-xs">Member since {memberSince}</span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
 
-        <motion.div {...fadeUp(0.08)} className="mb-6">
-          <div className="bg-[#111111] border border-white/8 rounded-2xl p-5">
-            <div className="flex items-start justify-between gap-4 flex-wrap">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gold-primary/10 flex items-center justify-center flex-shrink-0">
-                  <CreditCard size={18} className="text-gold-primary" />
+        {/* ── Profile Card ─────────────────────────────────────── */}
+        <motion.div {...fadeUp(0)} className="mb-6">
+          <div className="relative overflow-hidden bg-[#111111] border border-gold-primary/20 rounded-2xl">
+            {/* Gold ambient glow top-right */}
+            <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-gold-primary/5 blur-3xl pointer-events-none" />
+
+            <div className="relative p-6 sm:p-8">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+
+                {/* Avatar */}
+                <div className="relative flex-shrink-0">
+                  <div className="w-20 h-20 rounded-2xl bg-gold-gradient flex items-center justify-center shadow-gold-md">
+                    <span className="font-heading font-black text-2xl text-white tracking-wide">
+                      {initials}
+                    </span>
+                  </div>
+                  <div className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full bg-emerald-500 border-2 border-[#111111] flex items-center justify-center">
+                    <CheckCircle size={11} className="text-white" />
+                  </div>
                 </div>
-                <div>
-                  <p className="font-heading font-bold text-white text-sm">Your Plan: <span className="text-gold-primary">{currentPlan}</span></p>
-                  <p className="font-body text-white/35 text-xs mt-0.5">
-                    {benefits.length > 0 ? `Includes: ${benefits.slice(0, 2).join(', ')}` : 'Start your credit repair journey'}
-                    {benefits.length > 2 && ` +${benefits.length - 2} more`}
-                  </p>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <h2 className="font-heading text-2xl font-black text-white">
+                      {user?.name || 'Client'}
+                    </h2>
+                    <span className={`inline-flex items-center gap-1.5 border rounded-full px-2.5 py-0.5 font-body text-[11px] font-bold tracking-wide ${planTierClass}`}>
+                      <Award size={10} />
+                      {currentPlan}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-4 mt-2">
+                    <div className="flex items-center gap-1.5 text-white/40">
+                      <Mail size={12} />
+                      <span className="font-body text-sm truncate">{user?.email}</span>
+                    </div>
+                    <div className="hidden sm:block w-px h-3 bg-white/10" />
+                    <div className="flex items-center gap-1.5 text-white/30">
+                      <Clock size={12} />
+                      <span className="font-body text-xs">Member since {memberSince}</span>
+                    </div>
+                    <div className="hidden sm:block w-px h-3 bg-white/10" />
+                    <div className="flex items-center gap-1.5 text-white/30">
+                      <Shield size={12} />
+                      <span className="font-body text-xs capitalize">
+                        {user?.role === 'admin' ? 'Administrator' : 'Client Account'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Plan benefits preview */}
+                  {benefits.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {benefits.slice(0, 3).map((b) => (
+                        <span key={b} className="inline-flex items-center gap-1 bg-white/4 border border-white/8 rounded-full px-2.5 py-0.5 font-body text-[11px] text-white/50">
+                          <CheckCircle size={9} className="text-emerald-400" /> {b}
+                        </span>
+                      ))}
+                      {benefits.length > 3 && (
+                        <span className="inline-flex items-center gap-1 bg-white/4 border border-white/8 rounded-full px-2.5 py-0.5 font-body text-[11px] text-white/40">
+                          +{benefits.length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Credit Score Ring */}
+                <div className="flex-shrink-0 sm:border-l sm:border-white/8 sm:pl-6">
+                  <CreditScoreRing score={creditScore} />
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                {isUpgradeable && nextPlan && (
+
+              {/* Upgrade Banner */}
+              {isUpgradeable && nextPlan && currentPlan !== 'Free Consultation' && (
+                <div className="mt-6 pt-5 border-t border-white/6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div>
+                    <p className="font-body text-white/50 text-xs">
+                      <span className="text-gold-primary font-semibold">Upgrade available</span> — unlock more features with {nextPlan.name} Plan
+                    </p>
+                  </div>
                   <Link
                     to="/pricing"
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gold-gradient text-white font-heading font-bold text-xs shadow-gold-sm hover:shadow-gold-md transition-all"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gold-gradient text-white font-heading font-bold text-xs shadow-gold-sm hover:shadow-gold-md transition-all whitespace-nowrap"
                   >
-                    <Zap size={12} />
-                    Upgrade to {nextPlan.name}
+                    <Zap size={11} /> Upgrade to {nextPlan.name}
                   </Link>
-                )}
-                <Link
-                  to="/pricing"
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white hover:border-white/20 font-body text-xs font-semibold transition-all"
-                >
-                  View All Plans <ArrowRight size={12} />
-                </Link>
-              </div>
-            </div>
+                </div>
+              )}
 
-            {benefits.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-white/5 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {benefits.map((benefit) => (
-                  <div key={benefit} className="flex items-center gap-2">
-                    <div className="w-3.5 h-3.5 rounded-full bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle size={8} className="text-emerald-400" />
-                    </div>
-                    <span className="font-body text-white/50 text-xs">{benefit}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+              {/* Free plan CTA */}
+              {currentPlan === 'Free Consultation' && (
+                <div className="mt-5 pt-5 border-t border-white/6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <p className="font-body text-white/40 text-xs">
+                    You're on the free plan. Choose a plan to start your credit repair journey.
+                  </p>
+                  <Link
+                    to="/pricing"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gold-gradient text-white font-heading font-bold text-xs shadow-gold-sm hover:shadow-gold-md transition-all whitespace-nowrap"
+                  >
+                    <Zap size={11} /> View Plans
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </motion.div>
 
-        <motion.div {...fadeUp(0.14)} className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          {STAT_CARDS.map((card) => (
+        {/* ── Stats Row ─────────────────────────────────────────── */}
+        <motion.div {...fadeUp(0.1)} className="grid grid-cols-3 gap-4 mb-6">
+          {statCards.map((card) => (
             <div
               key={card.label}
               className={`bg-gradient-to-br ${card.color} border border-white/8 rounded-2xl p-5`}
             >
-              <div className="flex items-center justify-between mb-3">
-                <card.icon size={18} className="text-white/40" />
+              <div className="mb-3">
+                <card.icon size={18} className={card.iconColor} />
               </div>
               <p className="font-heading text-2xl font-black text-white">{card.value}</p>
               <p className="font-body text-white/60 text-xs font-semibold mt-0.5">{card.label}</p>
@@ -194,7 +347,43 @@ export default function Dashboard() {
           ))}
         </motion.div>
 
-        <motion.div {...fadeUp(0.2)} className="mb-6">
+        {/* ── Plan Card ─────────────────────────────────────────── */}
+        <motion.div {...fadeUp(0.16)} className="mb-6">
+          <div className="bg-[#111111] border border-white/8 rounded-2xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-gold-primary/10 flex items-center justify-center">
+                  <CreditCard size={15} className="text-gold-primary" />
+                </div>
+                <p className="font-heading font-bold text-white text-sm">
+                  Current Plan: <span className="text-gold-primary">{currentPlan}</span>
+                </p>
+              </div>
+              <Link
+                to="/pricing"
+                className="flex items-center gap-1 text-white/30 hover:text-gold-primary font-body text-xs transition-colors"
+              >
+                View All <ChevronRight size={12} />
+              </Link>
+            </div>
+
+            {benefits.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {benefits.map((benefit) => (
+                  <div key={benefit} className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-full bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle size={9} className="text-emerald-400" />
+                    </div>
+                    <span className="font-body text-white/55 text-xs">{benefit}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* ── Quick Actions ─────────────────────────────────────── */}
+        <motion.div {...fadeUp(0.22)} className="mb-6">
           <h3 className="font-heading text-base font-bold text-white mb-3">Your Plan Features</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {quickActions.map((action) => (
@@ -216,10 +405,15 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        <motion.div {...fadeUp(0.26)}>
+        {/* ── CTA Banner ────────────────────────────────────────── */}
+        <motion.div {...fadeUp(0.28)}>
           <div className="bg-gold-gradient rounded-2xl p-6 text-center">
-            <h3 className="font-heading text-xl font-black text-white mb-2">Ready to Transform Your Credit?</h3>
-            <p className="font-body text-white/75 text-sm mb-4">Our experts are standing by to build your personalized credit recovery plan.</p>
+            <h3 className="font-heading text-xl font-black text-white mb-2">
+              Ready to Transform Your Credit, {firstName}?
+            </h3>
+            <p className="font-body text-white/75 text-sm mb-4">
+              Our experts are standing by to build your personalized credit recovery plan.
+            </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <a
                 href="/contact"
@@ -236,6 +430,7 @@ export default function Dashboard() {
             </div>
           </div>
         </motion.div>
+
       </div>
     </div>
   )
