@@ -87,6 +87,15 @@ body {
   }
 }
 
+/* ─── Button Glow Animation ──────────────────────────────────────────────────── */
+@keyframes goldGlow {
+  0%, 100% { box-shadow: 0 0 12px rgba(184,146,74,0.4); }
+  50%       { box-shadow: 0 0 28px rgba(184,146,74,0.8); }
+}
+.btn-glow-pulse:hover {
+  animation: goldGlow 1.5s ease-in-out infinite;
+}
+
 /* ─── Custom Scrollbar ───────────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import CountUp from 'react-countup'
-import { ArrowRight, ChevronDown, Star, Users, TrendingUp, DollarSign, BarChart3, FileText, Shield, CheckCircle } from 'lucide-react'
+import { ArrowRight, ChevronDown, Star, Users, TrendingUp, DollarSign, BarChart3, FileText, Shield } from 'lucide-react'
 import SectionWrapper from '@components/ui/SectionWrapper'
 import Button from '@components/ui/Button'
 import { services } from '@data/services'
@@ -21,7 +21,7 @@ const steps = [
   { number: '04', title: 'Monitor Progress', desc: 'Track your score improvements with real-time monitoring and monthly reports.' },
 ]
 
-function StatCard({ icon: Icon, value, suffix, prefix, label }: { icon: React.ElementType, value: number, suffix: string, prefix?: string, label: string }) {
+function StatCard({ icon: Icon, value, suffix, prefix, label }: { icon: React.ElementType; value: number; suffix: string; prefix?: string; label: string }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.5 })
   return (
     <div ref={ref} className="flex flex-col items-center gap-2">
@@ -36,12 +36,7 @@ function StatCard({ icon: Icon, value, suffix, prefix, label }: { icon: React.El
   )
 }
 
-const iconMap: Record<string, React.ElementType> = {
-  BarChart3,
-  FileText,
-  TrendingUp,
-  Shield,
-}
+const iconMap: Record<string, React.ElementType> = { BarChart3, FileText, TrendingUp, Shield }
 
 export default function Home() {
   return (
@@ -49,7 +44,6 @@ export default function Home() {
       {/* Hero */}
       <section className="min-h-screen bg-dark-hero flex flex-col justify-center relative overflow-hidden">
         <div className="absolute inset-0 bg-gold-glow" />
-        {/* Floating particles */}
         {[...Array(6)].map((_, i) => (
           <motion.div
             key={i}
@@ -70,27 +64,22 @@ export default function Home() {
             <span className="section-label">Proximity Credit Repair</span>
             <h1 className="font-heading font-extrabold text-5xl md:text-6xl lg:text-7xl text-white leading-tight mb-6">
               Restore Your Credit.{' '}
-              <span className="text-gold-gradient">Reclaim Your Life.</span>
+              <span className="gold-gradient-text">Reclaim Your Life.</span>
             </h1>
             <p className="font-body text-xl text-white/70 mb-10 max-w-2xl leading-relaxed">
               Expert credit repair that removes negative items, boosts your score, and opens doors to better rates, loans, and financial opportunities.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link to="/contact">
-                <Button size="lg">
-                  Start Free Consultation <ArrowRight size={20} />
-                </Button>
-              </Link>
-              <Link to="/how-it-works">
-                <Button variant="secondary" size="lg">
-                  How It Works
-                </Button>
-              </Link>
+              <Button href="/contact" size="lg">
+                Start Free Consultation <ArrowRight size={20} />
+              </Button>
+              <Button href="/how-it-works" variant="secondary" size="lg">
+                How It Works
+              </Button>
             </div>
           </motion.div>
         </div>
 
-        {/* Trust Bar */}
         <div className="relative z-10 border-t border-gold-primary/20 bg-dark-card/50 backdrop-blur-sm">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl py-10">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
@@ -115,7 +104,7 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="text-center mb-16">
             <span className="section-label">What We Do</span>
-            <h2 className="font-heading font-bold text-4xl md:text-5xl text-dark-charcoal">
+            <h2 className="font-heading font-bold text-4xl md:text-5xl text-body-text">
               Comprehensive Credit Repair Services
             </h2>
           </div>
@@ -130,13 +119,13 @@ export default function Home() {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
                   whileHover={{ y: -6 }}
-                  className="bg-white rounded-2xl p-8 shadow-sm border border-gold-primary/10 hover:border-gold-primary/30 hover:shadow-lg hover:shadow-gold-primary/5 transition-all duration-300"
+                  className="bg-white rounded-card p-8 shadow-sm border border-gold-primary/10 hover:border-gold-primary/30 hover:shadow-gold-sm transition-all duration-300"
                 >
                   <div className="w-12 h-12 bg-gold-gradient rounded-xl flex items-center justify-center mb-5">
                     {Icon && <Icon size={22} className="text-white" />}
                   </div>
-                  <h3 className="font-heading font-semibold text-lg text-dark-charcoal mb-3">{service.title}</h3>
-                  <p className="text-muted text-sm leading-relaxed mb-4">{service.shortDescription}</p>
+                  <h3 className="font-heading font-semibold text-lg text-body-text mb-3">{service.title}</h3>
+                  <p className="text-muted-text text-sm leading-relaxed mb-4">{service.shortDescription}</p>
                   <Link to="/services" className="text-gold-primary text-sm font-heading font-semibold hover:text-gold-dark transition-colors flex items-center gap-1">
                     Learn More <ArrowRight size={14} />
                   </Link>
@@ -147,16 +136,14 @@ export default function Home() {
         </div>
       </SectionWrapper>
 
-      {/* How It Works Strip */}
-      <SectionWrapper className="bg-dark-hero">
+      {/* How It Works */}
+      <SectionWrapper className="bg-near-black">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="text-center mb-16">
             <span className="section-label">The Process</span>
-            <h2 className="font-heading font-bold text-4xl md:text-5xl text-white">
-              How It Works
-            </h2>
+            <h2 className="font-heading font-bold text-4xl md:text-5xl text-white">How It Works</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {steps.map((step, i) => (
               <motion.div
                 key={step.number}
@@ -166,7 +153,7 @@ export default function Home() {
                 transition={{ delay: i * 0.15 }}
                 className="text-center"
               >
-                <div className="w-16 h-16 bg-gold-gradient rounded-full flex items-center justify-center mx-auto mb-5 font-heading font-extrabold text-white text-lg shadow-lg shadow-gold-primary/20">
+                <div className="w-16 h-16 bg-gold-gradient rounded-full flex items-center justify-center mx-auto mb-5 font-heading font-extrabold text-white text-lg shadow-gold-md">
                   {step.number}
                 </div>
                 <h3 className="font-heading font-semibold text-white text-lg mb-3">{step.title}</h3>
@@ -182,7 +169,7 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="text-center mb-16">
             <span className="section-label">Client Results</span>
-            <h2 className="font-heading font-bold text-4xl md:text-5xl text-dark-charcoal">
+            <h2 className="font-heading font-bold text-4xl md:text-5xl text-body-text">
               Real Stories, Real Results
             </h2>
           </div>
@@ -194,41 +181,38 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-offwhite rounded-2xl p-8 border border-gold-primary/10"
+                className="bg-offwhite rounded-card p-8 border border-gold-primary/10"
               >
                 <div className="flex gap-1 mb-4">
                   {[...Array(t.rating)].map((_, j) => (
                     <Star key={j} size={16} className="text-gold-primary fill-gold-primary" />
                   ))}
                 </div>
-                <p className="text-dark-charcoal/80 text-sm leading-relaxed mb-6 italic">"{t.quote}"</p>
+                <p className="text-body-text/80 text-sm leading-relaxed mb-6 italic">"{t.text}"</p>
                 <div className="flex justify-between items-end">
                   <div>
-                    <p className="font-heading font-semibold text-dark-charcoal">{t.name}</p>
-                    <p className="text-muted text-xs">{t.city}</p>
+                    <p className="font-heading font-semibold text-body-text">{t.clientName}</p>
+                    <p className="text-muted-text text-xs">{t.city}</p>
                   </div>
-                  <div className="text-right">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted">Score</span>
-                      <span className="text-red-500 font-bold font-heading text-sm">{t.beforeScore}</span>
-                      <ArrowRight size={12} className="text-gold-primary" />
-                      <span className="text-green-500 font-bold font-heading text-sm">{t.afterScore}</span>
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-red-500 font-bold font-heading text-sm">{t.beforeScore}</span>
+                    <ArrowRight size={12} className="text-gold-primary" />
+                    <span className="text-green-500 font-bold font-heading text-sm">{t.afterScore}</span>
                   </div>
                 </div>
               </motion.div>
             ))}
           </div>
           <div className="text-center mt-12">
-            <Link to="/testimonials">
-              <Button variant="secondary">See All Client Stories</Button>
-            </Link>
+            <Button href="/testimonials" variant="secondary">
+              See All Client Stories
+            </Button>
           </div>
         </div>
       </SectionWrapper>
 
       {/* Final CTA */}
-      <section className="bg-dark-hero py-24 relative overflow-hidden">
+      <section className="bg-near-black py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-gold-glow" />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl text-center relative z-10">
           <motion.div
@@ -236,17 +220,15 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="font-heading font-extrabold text-4xl md:text-5xl lg:text-6xl text-gold-gradient mb-6">
+            <h2 className="font-heading font-extrabold text-4xl md:text-5xl lg:text-6xl gold-gradient-text mb-6">
               Your Better Credit Score Starts Today
             </h2>
             <p className="text-white/70 text-xl mb-10 max-w-2xl mx-auto">
               Join thousands of clients who restored their credit and achieved financial freedom with Proximity.
             </p>
-            <Link to="/contact">
-              <Button size="lg">
-                Get Your Free Consultation <ArrowRight size={20} />
-              </Button>
-            </Link>
+            <Button href="/contact" size="lg">
+              Get Your Free Consultation <ArrowRight size={20} />
+            </Button>
           </motion.div>
         </div>
       </section>
