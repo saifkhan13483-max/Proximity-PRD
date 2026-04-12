@@ -111,11 +111,54 @@ npm run dev --prefix frontend    # Dev server at localhost:5000 (proxies /api �
 npm run build --prefix frontend  # Production build
 ```
 
-## Environment Variables
-See `.env.example` for all supported environment variables:
-- `VITE_SITE_URL` — canonical site URL for SEO (defaults to `https://proximity-credit-repair.replit.app`)
-- `VITE_CONTACT_API_URL` — POST endpoint for contact form submissions (Formspree or custom backend). Without this, the form shows an error directing users to call directly.
-- `VITE_ANALYTICS_ID` — Google Analytics 4 Measurement ID (e.g. `G-XXXXXXXXXX`)
+## Production Architecture
+
+```
+Browser → Vercel (frontend)
+           ├── /              → serves React SPA (dist/index.html)
+           ├── /assets/*      → immutable hashed static assets (1-year cache)
+           └── /api/*         → proxy rewrite → Railway (backend)
+
+Railway (backend)
+  node backend/server.js
+  PORT assigned dynamically by Railway
+  /api/health  — Railway health check endpoint
+```
+
+### Deployment Files
+- `vercel.json` (project root) — Vercel build config: SPA fallback rewrites, `/api/*` proxy to Railway, cache-control headers
+- `backend/railway.toml` — Railway build + deploy config pointing to `node server.js`
+
+### Required Environment Variables
+
+**Backend (Railway):**
+| Variable | Description |
+|----------|-------------|
+| `JWT_SECRET` | Long random string for signing JWTs — **required**, server refuses to start without it |
+| `PORT` | Assigned automatically by Railway |
+| `ALLOWED_ORIGINS` | Comma-separated list of allowed CORS origins (e.g. `https://your-app.vercel.app,http://localhost:5000`) |
+
+See `backend/.env.example` for a template.
+
+**Frontend (Vercel):**
+| Variable | Description |
+|----------|-------------|
+| `VITE_API_URL` | Backend base URL — used by Vite dev-server proxy (defaults to `http://localhost:3001`). In Vercel production, `/api/*` calls are rewritten via `vercel.json`. |
+| `VITE_SITE_URL` | Canonical site URL for SEO / Open Graph |
+| `VITE_ANALYTICS_ID` | Google Analytics 4 Measurement ID (e.g. `G-XXXXXXXXXX`) |
+
+See `frontend/.env.example` for a template.
+
+### Deploy Steps
+1. **Railway backend:**
+   - Create a new Railway project, connect the repo, set root to `backend/`
+   - Set `JWT_SECRET` and `ALLOWED_ORIGINS` environment variables
+   - Railway uses `railway.toml` to run `node server.js` automatically
+2. **Vercel frontend:**
+   - Create a new Vercel project, connect the repo
+   - In `vercel.json`, replace `https://your-railway-backend.up.railway.app` with the actual Railway URL
+   - Set `VITE_SITE_URL` and optionally `VITE_ANALYTICS_ID`
+   - Vercel uses `vercel.json` (root dir `frontend`, build `npm run build`, output `dist`)
 
 ## Production Readiness (Completed)
 - All contact info unified: phone `(800) 555-0192`, email `hello@proximitycreditrepair.com`, address `123 Financial Plaza, Suite 400, Atlanta, GA 30301` — sourced from `siteConfig` everywhere
