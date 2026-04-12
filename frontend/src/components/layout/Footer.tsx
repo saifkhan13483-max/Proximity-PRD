@@ -4,6 +4,7 @@ import { Phone, Mail, MapPin, Facebook, Instagram, Twitter, Linkedin } from 'luc
 import { navLinks, footerServiceLinks } from '@config/navigation'
 import { siteConfig } from '@config/site'
 import { SectionDivider } from '@components/ui'
+import ProximityLogo from '@components/ui/ProximityLogo'
 
 const socialLinks = [
   { icon: Facebook, label: 'Facebook', href: siteConfig.social.facebook },
@@ -18,11 +19,18 @@ export default function Footer() {
       <div className="container mx-auto py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           <div>
-            <Link to="/" className="inline-block mb-4">
-              <span className="font-heading font-extrabold text-xl gold-gradient-text block">
-                Proximity
-              </span>
-              <span className="font-body text-white text-xs">Credit Repair</span>
+            <Link to="/" className="inline-flex items-center gap-3 mb-4 group">
+              <div className="flex-shrink-0 group-hover:drop-shadow-[0_0_10px_rgba(184,146,74,0.55)] transition-all duration-300">
+                <ProximityLogo size={44} />
+              </div>
+              <div className="flex flex-col leading-none">
+                <span className="font-heading font-extrabold text-xl gold-gradient-text tracking-tight">
+                  Proximity
+                </span>
+                <span className="font-body text-white/40 text-[10px] tracking-widest uppercase mt-1">
+                  Credit Repair
+                </span>
+              </div>
             </Link>
             <p className="text-muted-text font-body text-caption leading-relaxed mb-6">
               Rebuilding credit. Rebuilding lives.
