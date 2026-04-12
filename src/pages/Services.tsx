@@ -1,79 +1,104 @@
 import { motion } from 'framer-motion'
-import { BarChart3, FileText, TrendingUp, Shield, CheckCircle, ArrowRight } from 'lucide-react'
-import SectionWrapper from '@components/ui/SectionWrapper'
-import Button from '@components/ui/Button'
-import { services } from '@data/services'
+  import { useInView } from 'react-intersection-observer'
+  import { Link } from 'react-router-dom'
+  import { BarChart2, FileText, TrendingUp, Shield, CheckCircle } from 'lucide-react'
+  import type { LucideIcon } from 'lucide-react'
+  import PageWrapper from '@components/layout/PageWrapper'
+  import SEOHead from '@components/layout/SEOHead'
+  import Section from '@components/layout/Section'
+  import SectionLabel from '@components/ui/SectionLabel'
+  import { Button } from '@components/ui'
+  import { fadeUp } from '@lib/animations'
+  import { services } from '@data/services'
 
-const iconMap: Record<string, React.ElementType> = { BarChart3, FileText, TrendingUp, Shield }
+  const iconMap: Record<string, LucideIcon> = { BarChart2, FileText, TrendingUp, Shield }
 
-export default function Services() {
-  return (
-    <>
-      <section className="pt-32 pb-16 bg-near-black relative overflow-hidden">
-        <div className="absolute inset-0 bg-gold-glow" />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
-          <span className="section-label">What We Offer</span>
-          <h1 className="font-heading font-extrabold text-5xl md:text-6xl text-white mb-6">
-            Our <span className="gold-gradient-text">Services</span>
-          </h1>
-          <p className="text-white/70 text-xl max-w-2xl">
-            Comprehensive credit repair solutions designed to remove negative items, boost your score, and restore your financial opportunities.
-          </p>
-        </div>
-      </section>
+  const servicesSchema = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      { '@type': 'Service', name: 'Credit Analysis', provider: { '@type': 'Organization', name: 'Proximity Credit Repair' } },
+      { '@type': 'Service', name: 'Dispute Filing', provider: { '@type': 'Organization', name: 'Proximity Credit Repair' } },
+      { '@type': 'Service', name: 'Score Monitoring', provider: { '@type': 'Organization', name: 'Proximity Credit Repair' } },
+      { '@type': 'Service', name: 'Debt Validation', provider: { '@type': 'Organization', name: 'Proximity Credit Repair' } },
+    ],
+  }
 
-      <SectionWrapper className="bg-offwhite">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            {services.map((service, i) => {
-              const Icon = iconMap[service.icon]
-              return (
-                <motion.div
-                  key={service.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="bg-white rounded-card p-10 shadow-sm border border-gold-primary/10 hover:border-gold-primary/30 hover:shadow-gold-sm transition-all duration-300"
-                >
-                  <div className="flex items-start gap-6">
-                    <div className="w-14 h-14 bg-gold-gradient rounded-2xl flex items-center justify-center shrink-0">
-                      {Icon && <Icon size={26} className="text-white" />}
-                    </div>
-                    <div className="flex-1">
-                      <h2 className="font-heading font-bold text-2xl text-body-text mb-3">{service.title}</h2>
-                      <p className="text-muted-text leading-relaxed mb-6">{service.description}</p>
-                      <ul className="space-y-2">
-                        {service.benefits.map((benefit) => (
-                          <li key={benefit} className="flex items-center gap-3 text-body-text/80 text-sm">
-                            <CheckCircle size={16} className="text-gold-primary shrink-0" />
-                            {benefit}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </motion.div>
-              )
-            })}
+  function ServiceBlock({ service, index }: { service: typeof services[0]; index: number }) {
+    const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 })
+    const isEven = index % 2 === 0
+    const Icon = iconMap[service.icon]
+
+    const InfoCol = (
+      <div className="flex flex-col">
+        {Icon && <Icon className="text-gold-primary mb-4" size={64} />}
+        <h2 className="font-heading font-bold text-h3 text-body-text">{service.title}</h2>
+        <p className="font-body text-body-base text-body-text mt-3">{service.description}</p>
+      </div>
+    )
+
+    const BenefitsCol = (
+      <div>
+        <h3 className="font-heading font-semibold text-subheading text-body-text mb-4">Key Benefits</h3>
+        <ul className="flex flex-col gap-3">
+          {service.benefits.map((benefit) => (
+            <li key={benefit} className="flex items-start gap-3">
+              <CheckCircle className="text-gold-primary flex-shrink-0 mt-0.5" size={20} />
+              <span className="font-body text-body-base">{benefit}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+
+    return (
+      <Section alt={isEven} id={service.id}>
+        <motion.div
+          ref={ref}
+          variants={fadeUp}
+          initial="hidden"
+          animate={inView ? 'visible' : 'hidden'}
+          className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start"
+        >
+          {isEven ? <>{InfoCol}{BenefitsCol}</> : <>{BenefitsCol}{InfoCol}</>}
+        </motion.div>
+      </Section>
+    )
+  }
+
+  export default function Services() {
+    return (
+      <PageWrapper>
+        <SEOHead
+          title="Credit Repair Services — Analysis, Disputes, Monitoring & Debt Validation"
+          description="Explore Proximity Credit Repair's full suite of services: Credit Analysis, Dispute Filing, Score Monitoring, and Debt Validation. Expert strategies tailored to your unique credit profile."
+          canonicalPath="/services"
+          schemaMarkup={servicesSchema}
+        />
+
+        <div className="bg-hero-gradient py-20 px-4">
+          <div className="container mx-auto text-center">
+            <h1 className="text-h2 font-heading font-black text-white">Our Services</h1>
+            <p className="text-muted-text text-caption mt-3">Home / Services</p>
           </div>
         </div>
-      </SectionWrapper>
 
-      <section className="bg-near-black py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gold-glow" />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl text-center relative z-10">
-          <h2 className="font-heading font-bold text-3xl md:text-4xl text-white mb-4">
-            Not sure where to start?
-          </h2>
-          <p className="text-white/60 text-lg mb-8">
-            Talk to one of our credit experts — free, no obligation, no pressure.
-          </p>
-          <Button href="/contact" size="lg">
-            Talk to an Expert <ArrowRight size={20} />
-          </Button>
-        </div>
-      </section>
-    </>
-  )
-}
+        {services.map((service, index) => (
+          <ServiceBlock key={service.id} service={service} index={index} />
+        ))}
+
+        <Section dark>
+          <div className="text-center">
+            <h2 className="text-h3 font-heading font-semibold text-white">
+              Not sure where to start? Talk to an expert.
+            </h2>
+            <div className="mt-8">
+              <Link to="/contact">
+                <Button size="lg">Get Your Free Consultation</Button>
+              </Link>
+            </div>
+          </div>
+        </Section>
+      </PageWrapper>
+    )
+  }
+  

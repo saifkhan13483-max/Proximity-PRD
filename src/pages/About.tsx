@@ -1,155 +1,126 @@
-import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { Heart, Shield, Users, Zap, ArrowRight } from 'lucide-react'
-import SectionWrapper from '@components/ui/SectionWrapper'
-import Button from '@components/ui/Button'
+import { useState } from 'react'
+  import { motion, AnimatePresence } from 'framer-motion'
+  import { useInView } from 'react-intersection-observer'
+  import { Shield, Award, TrendingUp, Heart } from 'lucide-react'
+  import PageWrapper from '@components/layout/PageWrapper'
+  import SEOHead from '@components/layout/SEOHead'
+  import Section from '@components/layout/Section'
+  import SectionLabel from '@components/ui/SectionLabel'
+  import { Card } from '@components/ui'
+  import { fadeUp } from '@lib/animations'
+  import { teamMembers } from '@data/team'
+  import { siteMetadata } from '@config/siteMetadata'
 
-const values = [
-  {
-    icon: Shield,
-    title: 'Integrity First',
-    description: 'We operate with complete transparency. No hidden fees, no false promises — only honest guidance and measurable results.',
-  },
-  {
-    icon: Heart,
-    title: 'Client-Centered',
-    description: 'Every strategy we build is tailored to your unique credit situation. We treat every client\'s financial future as our own.',
-  },
-  {
-    icon: Users,
-    title: 'Proven Expertise',
-    description: 'Our team of certified credit consultants brings deep knowledge of FCRA, FDCPA, and consumer protection law.',
-  },
-  {
-    icon: Zap,
-    title: 'Results-Driven',
-    description: 'We are obsessed with outcomes. Our 95% success rate isn\'t marketing — it\'s the product of relentless execution.',
-  },
-]
+  const aboutSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Proximity Credit Repair',
+    url: siteMetadata.siteUrl,
+    description: 'Expert credit repair services helping clients improve their credit scores through proven dispute strategies.',
+  }
 
-const team = [
-  { name: 'James Proximity', title: 'Founder & CEO', initials: 'JP' },
-  { name: 'Angela Moore', title: 'Head of Credit Strategy', initials: 'AM' },
-  { name: 'David Chen', title: 'Lead Credit Analyst', initials: 'DC' },
-  { name: 'Tanya Williams', title: 'Client Success Director', initials: 'TW' },
-]
+  const values = [
+    { icon: Shield, title: 'Transparency', description: 'We believe you deserve to know exactly what we are doing and why at every stage of your credit repair journey.' },
+    { icon: Award, title: 'Expertise', description: 'Our certified specialists bring deep, proven knowledge to every dispute, strategy, and recommendation we make.' },
+    { icon: TrendingUp, title: 'Results', description: 'We measure our success by your success. Real, measurable score improvements are our only acceptable outcome.' },
+    { icon: Heart, title: 'Dedication', description: 'Every client receives the same committed, personalized attention we would give to our own family.' },
+  ]
 
-export default function About() {
-  return (
-    <>
-      {/* Page Hero */}
-      <section className="pt-32 pb-16 bg-dark-hero relative overflow-hidden">
-        <div className="absolute inset-0 bg-gold-glow" />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
-          <span className="section-label">Our Story</span>
-          <h1 className="font-heading font-extrabold text-5xl md:text-6xl text-white mb-6">
-            About <span className="text-gold-gradient">Proximity</span>
-          </h1>
-          <p className="text-white/70 text-xl max-w-2xl">
-            Founded on the belief that everyone deserves access to financial opportunity — regardless of their credit past.
-          </p>
+  function TeamCard({ member }: { member: typeof teamMembers[0] }) {
+    const [hovered, setHovered] = useState(false)
+    const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 })
+
+    return (
+      <motion.div ref={ref} variants={fadeUp} initial="hidden" animate={inView ? 'visible' : 'hidden'}>
+        <Card variant="light" hover>
+          <div
+            className="w-full h-48 bg-gray-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden relative"
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+          >
+            <img
+              src={member.photoUrl}
+              alt={`Photo of ${member.name}, ${member.title}`}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+            <AnimatePresence>
+              {hovered && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 bg-gold-primary/90 rounded-lg flex items-center justify-center p-4"
+                >
+                  <p className="text-white text-caption text-center font-body">{member.bio}</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          <h4 className="font-heading font-bold text-body-text">{member.name}</h4>
+          <p className="text-gold-primary text-caption font-semibold">{member.title}</p>
+        </Card>
+      </motion.div>
+    )
+  }
+
+  export default function About() {
+    return (
+      <PageWrapper>
+        <SEOHead
+          title="About Us — Our Mission, Team & Values"
+          description="Meet the expert team behind Proximity Credit Repair. Dedicated to empowering clients with proven, transparent credit repair strategies. Discover our mission, values, and the specialists fighting for your financial future."
+          canonicalPath="/about"
+          schemaMarkup={aboutSchema}
+        />
+
+        <div className="bg-hero-gradient py-20 px-4">
+          <div className="container mx-auto text-center">
+            <h1 className="text-h2 font-heading font-black text-white">About Us</h1>
+            <p className="text-muted-text text-caption mt-3">Home / About</p>
+          </div>
         </div>
-      </section>
 
-      {/* Mission */}
-      <SectionWrapper className="bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <div className="max-w-4xl mx-auto">
-            <span className="section-label">Our Mission</span>
-            <h2 className="font-heading font-bold text-4xl md:text-5xl text-dark-charcoal mb-8">
-              Bridging the Gap Between Where You Are and Where You Deserve to Be
-            </h2>
-            <blockquote className="border-l-4 border-gold-primary bg-offwhite rounded-r-2xl p-8 mb-8">
-              <p className="font-body text-xl text-dark-charcoal/80 italic leading-relaxed">
-                "We started Proximity because we watched families get denied mortgages, car loans, and apartment rentals — not because they were bad people, but because they had bad information on their credit reports. We exist to fix that."
-              </p>
-              <footer className="mt-4 text-gold-primary font-heading font-semibold">
-                — James Proximity, Founder
-              </footer>
+        <Section>
+          <SectionLabel>OUR MISSION</SectionLabel>
+          <div className="flex flex-row mt-6">
+            <div className="w-1.5 self-stretch bg-gold-gradient rounded-full mr-8 flex-shrink-0" />
+            <blockquote className="text-h3 font-heading font-semibold text-body-text">
+              At Proximity Credit Repair, our mission is to empower individuals to take control of
+              their financial future through expert guidance, proven strategies, and unwavering
+              dedication to every client we serve.
             </blockquote>
-            <p className="text-muted leading-relaxed text-lg">
-              Since 2018, we have helped over 10,000 clients remove inaccurate negative items, boost their credit scores, and access the financial products they deserve. We combine deep legal expertise with personalized service to deliver results that change lives.
-            </p>
           </div>
-        </div>
-      </SectionWrapper>
+        </Section>
 
-      {/* Core Values */}
-      <SectionWrapper className="bg-offwhite">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <div className="text-center mb-16">
-            <span className="section-label">What Drives Us</span>
-            <h2 className="font-heading font-bold text-4xl md:text-5xl text-dark-charcoal">
-              Our Core Values
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, i) => (
-              <motion.div
-                key={value.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-white rounded-2xl p-8 shadow-sm border border-gold-primary/10 text-center"
-              >
-                <div className="w-14 h-14 bg-gold-gradient rounded-2xl flex items-center justify-center mx-auto mb-5">
-                  <value.icon size={24} className="text-white" />
-                </div>
-                <h3 className="font-heading font-semibold text-xl text-dark-charcoal mb-3">{value.title}</h3>
-                <p className="text-muted text-sm leading-relaxed">{value.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </SectionWrapper>
-
-      {/* Team */}
-      <SectionWrapper className="bg-dark-hero">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <div className="text-center mb-16">
-            <span className="section-label">The Team</span>
-            <h2 className="font-heading font-bold text-4xl md:text-5xl text-white">
-              Meet Our Experts
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member, i) => (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="glass-card p-8 text-center group"
-              >
-                <div className="w-20 h-20 bg-gold-gradient rounded-full flex items-center justify-center mx-auto mb-5 font-heading font-extrabold text-2xl text-white group-hover:scale-105 transition-transform duration-300">
-                  {member.initials}
-                </div>
-                <h3 className="font-heading font-semibold text-white text-lg mb-1">{member.name}</h3>
-                <p className="text-gold-primary text-sm font-body">{member.title}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </SectionWrapper>
-
-      {/* CTA */}
-      <SectionWrapper className="bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl text-center">
-          <h2 className="font-heading font-bold text-4xl text-dark-charcoal mb-6">
-            Ready to Work With Us?
+        <Section dark>
+          <SectionLabel>OUR VALUES</SectionLabel>
+          <h2 className="font-heading font-bold text-h2 text-white mt-2 mb-12">
+            What Drives Everything We Do
           </h2>
-          <p className="text-muted text-lg mb-10 max-w-xl mx-auto">
-            Your free consultation is waiting. Let our team build your personalized credit repair roadmap — at no cost, no obligation.
-          </p>
-          <Link to="/contact">
-            <Button size="lg">
-              Book Free Consultation <ArrowRight size={20} />
-            </Button>
-          </Link>
-        </div>
-      </SectionWrapper>
-    </>
-  )
-}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {values.map((v) => (
+              <Card key={v.title} variant="dark" hover>
+                <v.icon className="text-gold-primary mb-3" size={32} />
+                <h3 className="font-heading font-bold text-white mb-2">{v.title}</h3>
+                <p className="text-muted-text font-body text-caption">{v.description}</p>
+              </Card>
+            ))}
+          </div>
+        </Section>
+
+        <Section alt>
+          <SectionLabel>OUR TEAM</SectionLabel>
+          <h2 className="font-heading font-bold text-h2 text-body-text mt-2 mb-12">
+            Meet the Experts Behind Your Results
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {teamMembers.map((member) => (
+              <TeamCard key={member.id} member={member} />
+            ))}
+          </div>
+        </Section>
+      </PageWrapper>
+    )
+  }
+  

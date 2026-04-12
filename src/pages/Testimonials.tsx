@@ -1,111 +1,115 @@
 import { motion } from 'framer-motion'
-import { Star, ArrowRight, Play } from 'lucide-react'
-import SectionWrapper from '@components/ui/SectionWrapper'
-import Button from '@components/ui/Button'
-import { testimonials } from '@data/testimonials'
+  import { useInView } from 'react-intersection-observer'
+  import { Star, PlayCircle, Award, ThumbsUp } from 'lucide-react'
+  import type { LucideIcon } from 'lucide-react'
+  import PageWrapper from '@components/layout/PageWrapper'
+  import SEOHead from '@components/layout/SEOHead'
+  import Section from '@components/layout/Section'
+  import SectionLabel from '@components/ui/SectionLabel'
+  import { Card, Badge } from '@components/ui'
+  import { staggerContainer, fadeUp } from '@lib/animations'
+  import { testimonials } from '@data/testimonials'
 
-const badges = [
-  { label: 'BBB Accredited', rating: 'A+' },
-  { label: 'Google Reviews', rating: '4.9★' },
-  { label: 'Trustpilot', rating: 'Excellent' },
-  { label: 'NACCC Member', rating: 'Certified' },
-]
+  const trustBadges: { icon: LucideIcon; label: string; sub: string }[] = [
+    { icon: Award, label: 'BBB Accredited Business', sub: 'Accredited Business' },
+    { icon: Star, label: 'Google Reviews', sub: '5.0 / 5.0 Rating' },
+    { icon: ThumbsUp, label: 'Trustpilot Excellent', sub: 'Excellent Rating' },
+  ]
 
-export default function Testimonials() {
-  return (
-    <>
-      <section className="pt-32 pb-16 bg-near-black relative overflow-hidden">
-        <div className="absolute inset-0 bg-gold-glow" />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
-          <span className="section-label">Client Stories</span>
-          <h1 className="font-heading font-extrabold text-5xl md:text-6xl text-white mb-6">
-            Real Results, Real <span className="gold-gradient-text">People</span>
-          </h1>
-          <p className="text-white/70 text-xl max-w-2xl">
-            Over 10,000 clients have transformed their credit and their lives with Proximity. Here are their stories.
-          </p>
-        </div>
-      </section>
+  export default function Testimonials() {
+    const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 })
 
-      <div className="bg-card-black border-y border-gold-primary/10 py-8">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-            {badges.map((badge) => (
-              <div key={badge.label} className="flex flex-col items-center gap-1">
-                <span className="font-heading font-bold text-gold-primary text-lg">{badge.rating}</span>
-                <span className="text-white/50 text-sm">{badge.label}</span>
-              </div>
-            ))}
+    return (
+      <PageWrapper>
+        <SEOHead
+          title="Client Testimonials & Credit Repair Success Stories"
+          description="Read real success stories from Proximity Credit Repair clients who improved their credit scores by 100–175+ points. Before/after results from clients across the United States."
+          canonicalPath="/testimonials"
+        />
+
+        <div className="bg-hero-gradient py-20 px-4">
+          <div className="container mx-auto text-center">
+            <h1 className="text-h2 font-heading font-black text-white">Client Success Stories</h1>
+            <p className="text-muted-text text-caption mt-3">Home / Testimonials</p>
           </div>
         </div>
-      </div>
 
-      <SectionWrapper className="bg-offwhite">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        <Section>
+          <SectionLabel>TRUSTED & VERIFIED</SectionLabel>
+          <h2 className="font-heading font-bold text-h2 text-body-text mt-2 mb-12">
+            Why Clients Trust Proximity
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {trustBadges.map((badge) => (
+              <Card key={badge.label} variant="light" hover>
+                <div className="flex flex-col items-center text-center">
+                  <badge.icon className="text-gold-primary mb-3" size={40} />
+                  <h3 className="font-heading font-bold text-body-text mb-1">{badge.label}</h3>
+                  <p className="text-muted-text text-caption">{badge.sub}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Section>
+
+        <Section alt>
+          <SectionLabel>WHAT OUR CLIENTS SAY</SectionLabel>
+          <h2 className="font-heading font-bold text-h2 text-body-text mt-2 mb-12">
+            Real Results from Real People
+          </h2>
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-near-black rounded-card aspect-video max-w-3xl mx-auto mb-16 flex items-center justify-center relative overflow-hidden border border-gold-primary/20 cursor-pointer group"
+            ref={ref}
+            variants={staggerContainer}
+            initial="hidden"
+            animate={inView ? 'visible' : 'hidden'}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            <div className="absolute inset-0 bg-gold-glow" />
-            <div className="relative z-10 text-center">
-              <div className="w-20 h-20 bg-gold-gradient rounded-full flex items-center justify-center mx-auto mb-4 shadow-gold-lg group-hover:scale-110 transition-transform duration-300">
-                <Play size={32} className="text-white ml-1" />
-              </div>
-              <p className="text-white font-heading font-semibold text-lg">Watch Client Testimonials</p>
-              <p className="text-white/50 text-sm mt-1">Video coming soon</p>
-            </div>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {testimonials.map((t, i) => (
+            {testimonials.map((t) => (
               <motion.div
                 key={t.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-                className="bg-white rounded-card p-8 shadow-sm border border-gold-primary/10 relative"
+                variants={fadeUp}
+                className="bg-card-black border-t-2 border-gold-primary rounded-card p-6 relative overflow-hidden flex flex-col"
               >
-                <div className="absolute top-6 right-6 text-6xl font-heading text-gold-primary/10 font-extrabold leading-none">"</div>
-                <div className="flex gap-1 mb-4">
-                  {[...Array(t.rating)].map((_, j) => (
-                    <Star key={j} size={15} className="text-gold-primary fill-gold-primary" />
+                <span className="absolute top-4 left-4 text-8xl font-heading text-gold-primary/10 leading-none pointer-events-none select-none">
+                  &ldquo;
+                </span>
+                <div className="flex items-center gap-2 mb-3 relative z-10 flex-wrap">
+                  <Badge variant="neutral">{t.beforeScore}</Badge>
+                  <span className="text-muted-text text-sm">→</span>
+                  <Badge variant="success">{t.afterScore}</Badge>
+                  <span className="text-gold-primary font-semibold text-caption">
+                    +{t.afterScore - t.beforeScore} points
+                  </span>
+                </div>
+                <div className="flex gap-0.5 mb-4 relative z-10">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} size={14} fill="currentColor" className="text-gold-primary w-4 h-4" />
                   ))}
                 </div>
-                <p className="text-body-text/80 text-sm leading-relaxed mb-6 italic relative z-10">"{t.text}"</p>
-                <div className="flex justify-between items-center border-t border-gold-primary/10 pt-4">
-                  <div>
-                    <p className="font-heading font-semibold text-body-text text-sm">{t.clientName}</p>
-                    <p className="text-muted-text text-xs">{t.city}</p>
-                  </div>
-                  <div className="flex items-center gap-1 bg-offwhite rounded-pill px-3 py-1.5">
-                    <span className="text-red-500 font-heading font-bold text-xs">{t.beforeScore}</span>
-                    <ArrowRight size={10} className="text-gold-primary" />
-                    <span className="text-green-500 font-heading font-bold text-xs">{t.afterScore}</span>
-                  </div>
-                </div>
+                <p className="font-body text-body-base text-white/90 relative z-10 flex-1">{t.text}</p>
+                <p className="text-gold-primary font-semibold text-caption mt-4 relative z-10">
+                  {t.clientName} — {t.city}
+                </p>
               </motion.div>
             ))}
-          </div>
-        </div>
-      </SectionWrapper>
+          </motion.div>
+        </Section>
 
-      <section className="bg-near-black py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gold-glow" />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl text-center relative z-10">
-          <h2 className="font-heading font-bold text-4xl text-white mb-6">
-            Ready to Write Your Success Story?
+        <Section dark>
+          <SectionLabel>FEATURED STORY</SectionLabel>
+          <h2 className="font-heading font-bold text-h2 text-white mt-2 mb-12">
+            Watch Marcus's Journey
           </h2>
-          <p className="text-white/60 text-lg mb-10">
-            Join thousands of clients who transformed their credit with Proximity.
+          <div className="bg-card-black rounded-card aspect-video flex flex-col items-center justify-center max-w-3xl mx-auto">
+            <motion.div whileHover={{ scale: 1.1 }} className="cursor-pointer">
+              <PlayCircle className="text-gold-primary" size={80} />
+            </motion.div>
+          </div>
+          <p className="text-muted-text text-caption italic text-center mt-4">
+            Marcus T. — From 521 to 694 in 6 months
           </p>
-          <Button href="/contact" size="lg">
-            Get Started Free <ArrowRight size={20} />
-          </Button>
-        </div>
-      </section>
-    </>
-  )
-}
+        </Section>
+      </PageWrapper>
+    )
+  }
+  

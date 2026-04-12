@@ -1,96 +1,115 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown, ArrowRight } from 'lucide-react'
-import SectionWrapper from '@components/ui/SectionWrapper'
-import Button from '@components/ui/Button'
-import { faqs } from '@data/faqs'
-import type { FAQItem } from '@/types/index'
+  import { motion, AnimatePresence } from 'framer-motion'
+  import { ChevronDown } from 'lucide-react'
+  import { Link } from 'react-router-dom'
+  import PageWrapper from '@components/layout/PageWrapper'
+  import SEOHead from '@components/layout/SEOHead'
+  import Section from '@components/layout/Section'
+  import SectionLabel from '@components/ui/SectionLabel'
+  import { Button } from '@components/ui'
+  import { faqs } from '@data/faqs'
 
-function FAQAccordionItem({ question, answer }: { question: string; answer: string }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <div className="border border-gold-primary/10 rounded-card overflow-hidden">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between gap-4 p-6 text-left bg-white hover:bg-offwhite transition-colors"
-      >
-        <span className="font-heading font-semibold text-body-text">{question}</span>
-        <motion.div
-          animate={{ rotate: open ? 180 : 0 }}
-          transition={{ duration: 0.3 }}
-          className="shrink-0 text-gold-primary"
-        >
-          <ChevronDown size={20} />
-        </motion.div>
-      </button>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="px-6 pb-6 bg-white border-t border-gold-primary/10">
-              <p className="text-muted-text leading-relaxed pt-4">{answer}</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
-}
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  }
 
-const categoryConfig: { key: FAQItem['category']; label: string }[] = [
-  { key: 'about-credit-repair', label: 'About Credit Repair' },
-  { key: 'working-with-proximity', label: 'Working with Proximity' },
-]
+  const categories = [
+    { key: 'about-credit-repair' as const, label: 'About Credit Repair' },
+    { key: 'working-with-proximity' as const, label: 'Working with Proximity' },
+  ]
 
-export default function FAQ() {
-  return (
-    <>
-      <section className="pt-32 pb-16 bg-near-black relative overflow-hidden">
-        <div className="absolute inset-0 bg-gold-glow" />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
-          <span className="section-label">FAQ</span>
-          <h1 className="font-heading font-extrabold text-5xl md:text-6xl text-white mb-6">
-            Frequently Asked <span className="gold-gradient-text">Questions</span>
-          </h1>
-          <p className="text-white/70 text-xl max-w-2xl">
-            Everything you need to know about credit repair and working with Proximity.
-          </p>
+  export default function FAQ() {
+    const [openId, setOpenId] = useState<string | null>(null)
+    const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id))
+
+    return (
+      <PageWrapper>
+        <SEOHead
+          title="FAQ — Your Credit Repair Questions Answered"
+          description="Find answers to the most common credit repair questions. Learn about the process, timeline, compliance, and what to expect when working with Proximity Credit Repair."
+          canonicalPath="/faq"
+          schemaMarkup={faqSchema}
+        />
+
+        <div className="bg-hero-gradient py-20 px-4">
+          <div className="container mx-auto text-center">
+            <h1 className="text-h2 font-heading font-black text-white">Frequently Asked Questions</h1>
+            <p className="text-muted-text text-caption mt-3">Home / FAQ</p>
+          </div>
         </div>
-      </section>
 
-      <SectionWrapper className="bg-offwhite">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-          {categoryConfig.map(({ key, label }) => (
-            <div key={key} className="mb-16">
-              <h2 className="font-heading font-bold text-2xl text-body-text mb-8 flex items-center gap-3">
-                <span className="w-2 h-8 bg-gold-gradient rounded-full" />
-                {label}
-              </h2>
-              <div className="space-y-3">
+        <Section>
+          <SectionLabel>HAVE QUESTIONS?</SectionLabel>
+          <h2 className="font-heading font-bold text-h2 text-body-text mt-2 mb-4">
+            Everything You Need to Know
+          </h2>
+
+          {categories.map((cat) => (
+            <div key={cat.key}>
+              <h3 className="font-heading font-bold text-subheading text-body-text mb-4 mt-10">
+                {cat.label}
+              </h3>
+              <div>
                 {faqs
-                  .filter((faq) => faq.category === key)
-                  .map((faq) => (
-                    <FAQAccordionItem key={faq.id} question={faq.question} answer={faq.answer} />
+                  .filter((f) => f.category === cat.key)
+                  .map((item) => (
+                    <div key={item.id} className="border-b border-gold-primary/20">
+                      <button
+                        className="w-full flex justify-between items-center py-4 text-left font-body font-semibold text-body-base text-body-text"
+                        onClick={() => toggle(item.id)}
+                        aria-expanded={openId === item.id}
+                        aria-controls={`answer-${item.id}`}
+                      >
+                        {item.question}
+                        <motion.span
+                          animate={{ rotate: openId === item.id ? 180 : 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="flex-shrink-0 ml-4"
+                        >
+                          <ChevronDown size={20} className="text-gold-primary" />
+                        </motion.span>
+                      </button>
+                      <AnimatePresence initial={false}>
+                        {openId === item.id && (
+                          <motion.div
+                            id={`answer-${item.id}`}
+                            role="region"
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3, ease: 'easeInOut' }}
+                            style={{ overflow: 'hidden' }}
+                          >
+                            <p className="font-body text-body-base text-muted-text pb-4 leading-relaxed">
+                              {item.answer}
+                            </p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   ))}
               </div>
             </div>
           ))}
+        </Section>
 
-          <div className="text-center bg-near-black rounded-card p-12 border border-gold-primary/20">
-            <h3 className="font-heading font-bold text-2xl text-white mb-4">Still have questions?</h3>
-            <p className="text-white/60 mb-8">
-              Our team is happy to answer anything — reach out for a free, no-obligation conversation.
+        <Section alt>
+          <div className="text-center">
+            <p className="font-heading font-bold text-subheading text-body-text mb-6">
+              Still have questions? We're here to help.
             </p>
-            <Button href="/contact">
-              Contact Us <ArrowRight size={18} />
-            </Button>
+            <Link to="/contact">
+              <Button variant="secondary">Contact Us</Button>
+            </Link>
           </div>
-        </div>
-      </SectionWrapper>
-    </>
-  )
-}
+        </Section>
+      </PageWrapper>
+    )
+  }
+  
