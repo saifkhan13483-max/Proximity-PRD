@@ -6,7 +6,6 @@ import { motion } from 'framer-motion'
   import PageWrapper from '@components/layout/PageWrapper'
   import SEOHead from '@components/layout/SEOHead'
   import Section from '@components/layout/Section'
-  import SectionLabel from '@components/ui/SectionLabel'
   import { Button } from '@components/ui'
   import { fadeUp } from '@lib/animations'
   import { services } from '@data/services'
@@ -57,7 +56,7 @@ import { motion } from 'framer-motion'
           variants={fadeUp}
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
-          className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start"
         >
           {isEven ? <>{InfoCol}{BenefitsCol}</> : <>{BenefitsCol}{InfoCol}</>}
         </motion.div>

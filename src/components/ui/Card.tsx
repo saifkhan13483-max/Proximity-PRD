@@ -16,7 +16,7 @@ export default function Card({ variant = 'dark', hover = false, children, classN
     ? {
         whileHover: {
           y: -6,
-          boxShadow: '0 4px 24px rgba(184,146,74,0.35)',
+          boxShadow: '0 4px 24px color-mix(in srgb, var(--color-gold-primary) 35%, transparent)',
         },
         transition: { duration: 0.3, ease: 'easeOut' },
       }

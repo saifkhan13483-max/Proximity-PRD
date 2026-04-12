@@ -52,7 +52,7 @@ export default function HeroSection() {
       {PARTICLE_POSITIONS.map((pos, i) => (
         <motion.div
           key={i}
-          className="absolute w-1.5 h-1.5 rounded-full bg-gold-primary/30"
+          className={`absolute w-1.5 h-1.5 rounded-full bg-gold-primary/30${i >= 8 ? ' hidden sm:block' : ''}`}
           style={{ top: `${pos.top}%`, left: `${pos.left}%` }}
           animate={{ y: [0, -20, 0] }}
           transition={{

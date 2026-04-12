@@ -33,7 +33,7 @@ export default function Contact() {
     return () => {
       if (errorResetTimer.current) clearTimeout(errorResetTimer.current)
     }
-  }, [])
+  }, [setSubmissionStatus])
 
   const {
     register,

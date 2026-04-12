@@ -84,8 +84,8 @@ import { useState } from 'react'
 
         <Section>
           <SectionLabel>OUR MISSION</SectionLabel>
-          <div className="flex flex-row mt-6">
-            <div className="w-1.5 self-stretch bg-gold-gradient rounded-full mr-8 flex-shrink-0" />
+          <div className="flex flex-col md:flex-row mt-6">
+            <div className="w-full md:w-1.5 h-1.5 md:h-auto self-stretch bg-gold-gradient rounded-full mb-6 md:mb-0 md:mr-8 flex-shrink-0" />
             <blockquote className="text-h3 font-heading font-semibold text-body-text">
               At Proximity Credit Repair, our mission is to empower individuals to take control of
               their financial future through expert guidance, proven strategies, and unwavering
