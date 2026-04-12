@@ -273,6 +273,30 @@ app.delete('/api/admin/contacts/:id', authenticateToken, requireAdmin, (req, res
   res.json({ success: true })
 })
 
+// ── User Plan Selection ──────────────────────────────────────────────────────
+
+const VALID_PLANS = {
+  basic: 'Basic Plan',
+  standard: 'Standard Plan',
+  premium: 'Premium Plan',
+  vip: 'VIP Plan',
+}
+
+app.post('/api/users/plan', authenticateToken, (req, res) => {
+  const { planId } = req.body
+  if (!planId || !VALID_PLANS[planId]) {
+    return res.status(400).json({ error: 'Invalid plan selected' })
+  }
+  const users = loadUsers()
+  const idx = users.findIndex((u) => u.id === req.user.id)
+  if (idx === -1) return res.status(404).json({ error: 'User not found' })
+  if (users[idx].role === 'admin') return res.status(403).json({ error: 'Admin accounts cannot select plans' })
+
+  users[idx].plan = VALID_PLANS[planId]
+  saveUsers(users)
+  res.json({ plan: users[idx].plan })
+})
+
 // ── Health ───────────────────────────────────────────────────────────────────
 
 app.get('/api/health', (_req, res) => {

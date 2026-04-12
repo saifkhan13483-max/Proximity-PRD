@@ -88,6 +88,15 @@ proximity/
 - **Admin Pages:** `/admin/login`, `/admin`, `/admin/users`, `/admin/contacts`
 - **Navbar:** Shows "Sign In"/"Get Started" when logged out; "Dashboard"/"Admin Panel" + logout when logged in
 
+## Pricing System
+- **Page:** `/pricing` — Full pricing page with 4 plan tiers and monthly/annual billing toggle (20% annual discount)
+- **Plans:** Basic ($49/mo), Standard ($99/mo, highlighted), Premium ($149/mo), VIP ($199/mo)
+- **Plan Selection:** Authenticated users can select/upgrade plans directly from the pricing page; changes are saved to the backend and reflected in the navbar/dashboard immediately
+- **Unauthenticated flow:** Clicking a plan CTA redirects to `/register`
+- **Dashboard integration:** Shows current plan benefits, upgrade prompt for lower-tier users, and links to pricing
+- **Data file:** `frontend/src/data/plans.ts`
+- **Backend route:** `POST /api/users/plan` — updates the logged-in user's plan
+
 ## Admin Panel
 - **Default Credentials:** `admin@proximity.com` / `Admin@2026!` (seeded on first run)
 - **Dashboard:** Stats overview — total users, contact leads, unread leads, plan distribution

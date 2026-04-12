@@ -9,6 +9,7 @@ import LoadingScreen from '@components/ui/LoadingScreen'
 const Home = lazy(() => import('@pages/Home'))
 const About = lazy(() => import('@pages/About'))
 const Services = lazy(() => import('@pages/Services'))
+const Pricing = lazy(() => import('@pages/Pricing'))
 const HowItWorks = lazy(() => import('@pages/HowItWorks'))
 const Testimonials = lazy(() => import('@pages/Testimonials'))
 const FAQ = lazy(() => import('@pages/FAQ'))
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
       { path: '/', element: <Home /> },
       { path: '/about', element: <About /> },
       { path: '/services', element: <Services /> },
+      { path: '/pricing', element: <Pricing /> },
       { path: '/how-it-works', element: <HowItWorks /> },
       { path: '/testimonials', element: <Testimonials /> },
       { path: '/faq', element: <FAQ /> },
