@@ -25,7 +25,7 @@ const NAV_WITH_DROPDOWN: NavItemWithDropdown[] = navLinks.map((link) =>
 )
 
 const TABLET_LINKS = navLinks.filter((l) =>
-  ['Home', 'About', 'Services', 'Contact'].includes(l.label)
+  ['Home', 'Services', 'Pricing', 'Contact'].includes(l.label)
 )
 
 function LogoMark() {
