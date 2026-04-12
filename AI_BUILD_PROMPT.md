@@ -720,7 +720,7 @@ Column 4 — Contact Info:
 
 Bottom bar (full width, separated by `SectionDivider` above):
 - `flex flex-col md:flex-row justify-between items-center gap-2 pt-6`
-- Left: `© 2025 Proximity Credit Repair. All rights reserved.` in `text-muted-text text-caption`
+- Left: `© 2026 Proximity Credit Repair. All rights reserved.` in `text-muted-text text-caption`
 - Right: Legal disclaimer in `text-muted-text text-label italic`:
   "Results may vary. We do not guarantee specific credit score improvements."
 
@@ -777,7 +777,7 @@ Define all 8 routes using lazy-loaded page components with `React.lazy()`:
 - `/contact` → `pages/Contact.tsx`
 - `*` → `pages/NotFound.tsx`
 
-All 7 content page routes are children of the `AppLayout` route (which renders the `<Outlet />`).
+All 8 routes (the 7 content pages + the `*` catch-all NotFound) are children of the `AppLayout` route (which renders the `<Outlet />`), so every page including the 404 page renders with the shared Navbar and Footer.
 
 Wrap all lazy routes in a single `<Suspense fallback={<LoadingScreen />}>` in `AppLayout.tsx` wrapping the `<Outlet />`.
 
@@ -1140,7 +1140,7 @@ Review Phase 6 (State Management) for the Proximity Credit Repair project:
 2. Confirm `src/store/formStore.ts` exports `useFormStore` with: submissionStatus, validationErrors, formData, and all their action functions
 3. Confirm `src/store/index.ts` re-exports both stores
 4. Open the app and click the hamburger menu — confirm it opens and closes correctly via `useUIStore`
-5. In the browser console, run: `window.__zustand = require('zustand'); useUIStore.getState().addToast({ message: 'Test toast', type: 'success', duration: 3000 })` — confirm a toast appears and auto-dismisses (or trigger this from a temporary button in a component)
+5. Test the toast system by temporarily adding a button to any page that calls `useUIStore.getState().addToast({ message: 'Test toast', type: 'success', duration: 3000 })` — confirm a toast appears at the bottom-right and auto-dismisses after 3 seconds, then remove the test button
 6. Confirm `Navbar.tsx` uses `useUIStore` for mobile menu state (no local useState for this)
 7. Confirm `ToastContainer.tsx` reads from `useUIStore.toastQueue`
 8. Confirm `contactService.ts` returns a simulated success after 1500ms when `VITE_CONTACT_API_URL` is empty
@@ -1800,7 +1800,7 @@ In the Proximity Credit Repair project, verify and finalize SEO implementation o
 
 For each page, confirm the `SEOHead` component is called with unique and accurate values:
 
-- `/` (Home): title 'Expert Credit Repair Services That Deliver Real Results', description 'Join 10,000+ clients who improved their credit scores with Proximity Credit Repair. Proven strategies, transparent process, real results. Get your free consultation today.', schemaMarkup: ProfessionalService (as defined in Phase 7.4)
+- `/` (Home): title 'Expert Credit Repair Services That Deliver Real Results', description from `siteMetadata.siteDescription` (imported from `@config/siteMetadata` — do NOT hardcode a different description here), schemaMarkup: ProfessionalService (as defined in Phase 7.4)
 
 - `/about`: title 'About Us — Our Mission, Team & Values', relevant description, schemaMarkup: Organization (as defined in Phase 7.5)
 
@@ -2199,7 +2199,7 @@ In the Proximity Credit Repair project, run Lighthouse audits and fix all issues
 
 PERFORMANCE (≥ 90):
 - LCP < 2.5s: Ensure hero fonts load quickly. Verify `&display=swap` is in the Google Fonts URL. The hero headline should render quickly — avoid render-blocking resources.
-- CLS < 0.1: Ensure all images have explicit `width` and `height` attributes (use `OptimizedImage`). Ensure fonts don't shift (font-display: swap handles this).
+- CLS < 0.1: Ensure all images have explicit `width` and `height` attributes (use `OptimizedImage` component built in Phase 11). Ensure fonts don't shift (font-display: swap handles this).
 - FID/INP < 100ms: Ensure no heavy operations run synchronously on load.
 - Check Lighthouse "Opportunities" — address the top 3 issues flagged.
 
