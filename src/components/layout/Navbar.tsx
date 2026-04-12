@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
@@ -6,13 +5,15 @@ import { navLinks } from '@config/navigation'
 import { useScrollPosition } from '@hooks/useScrollPosition'
 import { Button } from '@components/ui'
 import { cn } from '@lib/utils'
+import { useUIStore } from '@store/uiStore'
 
 export default function Navbar() {
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const mobileMenuOpen = useUIStore((state) => state.mobileMenuOpen)
+  const openMobileMenu = useUIStore((state) => state.openMobileMenu)
+  const closeMobileMenu = useUIStore((state) => state.closeMobileMenu)
+  const toggleMobileMenu = useUIStore((state) => state.toggleMobileMenu)
   const { isScrolled } = useScrollPosition()
   const location = useLocation()
-
-  const closeDrawer = () => setDrawerOpen(false)
 
   return (
     <header
@@ -60,24 +61,24 @@ export default function Navbar() {
         </div>
 
         <button
-          onClick={() => setDrawerOpen(!drawerOpen)}
+          onClick={toggleMobileMenu}
           className="lg:hidden text-white p-2"
-          aria-label={drawerOpen ? 'Close navigation menu' : 'Open navigation menu'}
-          aria-expanded={drawerOpen}
+          aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={mobileMenuOpen}
         >
-          {drawerOpen ? <X size={24} /> : <Menu size={24} />}
+          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </nav>
 
       <AnimatePresence>
-        {drawerOpen && (
+        {mobileMenuOpen && (
           <>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-              onClick={closeDrawer}
+              onClick={closeMobileMenu}
             />
             <motion.div
               initial={{ x: '100%' }}
@@ -87,7 +88,7 @@ export default function Navbar() {
               className="fixed inset-y-0 right-0 w-64 bg-near-black z-50 flex flex-col p-6 lg:hidden"
             >
               <button
-                onClick={closeDrawer}
+                onClick={closeMobileMenu}
                 className="self-end text-white mb-6"
                 aria-label="Close navigation menu"
               >
@@ -100,7 +101,7 @@ export default function Navbar() {
                     <Link
                       key={link.href}
                       to={link.href}
-                      onClick={closeDrawer}
+                      onClick={closeMobileMenu}
                       className={cn(
                         'font-body font-medium py-2 transition-colors duration-200',
                         isActive ? 'text-gold-primary' : 'text-white/80 hover:text-white'
@@ -111,7 +112,13 @@ export default function Navbar() {
                   )
                 })}
               </div>
-              <Button variant="primary" size="md" href="/contact" className="w-full text-center mt-4">
+              <Button
+                variant="primary"
+                size="md"
+                href="/contact"
+                className="w-full text-center mt-4"
+                onClick={closeMobileMenu}
+              >
                 Get Free Consultation
               </Button>
             </motion.div>
