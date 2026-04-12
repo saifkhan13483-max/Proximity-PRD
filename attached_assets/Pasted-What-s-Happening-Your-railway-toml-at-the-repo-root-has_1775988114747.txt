@@ -1,0 +1,90 @@
+What's Happening
+Your railway.toml at the repo root has a buildCmd = "cd backend && npm install", but Railway is using a Dockerfile (or generating one) that doesn't include a Node.js runtime. The [4/5] RUN output confirms it's running Docker build steps — and the base image has no npm.
+
+This means one of two things is happening:
+
+There's a Dockerfile in your repo root that Railway is detecting and using instead of Nixpacks — and that Dockerfile uses a base image without Node.js (e.g., ubuntu, alpine, debian).
+The generated build plan is somehow creating a container without Node.js.
+The Fix
+Option 1 — Delete the Dockerfile and let Nixpacks auto-detect (Simplest)
+If there's a Dockerfile in your repo root or backend/ folder, delete it or rename it. Then set things up properly:
+
+In Railway Dashboard:
+
+Go to Settings → Source → Root Directory → set it to backend
+Go to Settings → Build → Builder → make sure it's set to Nixpacks (not Dockerfile)
+Redeploy
+In backend/ keep a simple railway.toml:
+
+Copy[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "node server.js"
+healthcheckPath = "/health"
+restartPolicyType = "on_failure"
+With root directory set to backend/, Nixpacks will find package.json, automatically detect it's a Node.js app, install Node + npm, run npm install, and then use your start command. No custom build command needed.
+
+Option 2 — If you MUST use a Dockerfile, fix the base image
+If you want to keep the Dockerfile approach, make sure it uses a Node.js base image. Create/update backend/Dockerfile:
+
+Copy# Use an official Node.js runtime
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files first (for layer caching)
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install --production
+
+# Copy the rest of the backend code
+COPY . .
+
+# Railway sets PORT dynamically
+EXPOSE ${PORT:-3001}
+
+# Start the app
+CMD ["node", "server.js"]
+Then in Railway Dashboard:
+
+Set Root Directory to backend
+Set Builder to Dockerfile
+Redeploy
+Option 3 — Use railpack.json in backend/ (explicit provider)
+If you set root directory to backend/ but Railpack still can't detect it, force the provider:
+
+Copy{
+  "$schema": "https://schema.railpack.com",
+  "provider": "node",
+  "deploy": {
+    "startCommand": "node server.js"
+  }
+}
+Recommended Action (Do This Now)
+Here's the exact prompt you can give your AI coding assistant to fix this:
+
+CopySTOP. The Railway deployment is failing because npm is not found in the build container.
+
+DO THESE EXACT STEPS:
+
+1. DELETE any Dockerfile in the repo root AND in backend/ (if they exist)
+2. DELETE any railway.toml from the REPO ROOT (if it exists)
+3. CREATE backend/railway.toml with ONLY this content:
+
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "node server.js"
+healthcheckPath = "/health"
+restartPolicyType = "on_failure"
+
+4. VERIFY that backend/package.json exists and has valid content
+5. DO NOT add any custom buildCmd — let Nixpacks auto-detect Node.js
+
+Then I will set Root Directory = "backend" in the Railway dashboard.
+
+DO NOT create any Dockerfile. DO NOT put railway.toml in the repo root.
