@@ -1,0 +1,79 @@
+export interface Testimonial {
+  id: string
+  name: string
+  city: string
+  beforeScore: number
+  afterScore: number
+  rating: number
+  quote: string
+  timeframe: string
+}
+
+export const testimonials: Testimonial[] = [
+  {
+    id: '1',
+    name: 'Marcus T.',
+    city: 'Atlanta, GA',
+    beforeScore: 512,
+    afterScore: 748,
+    rating: 5,
+    quote:
+      'I was denied for a mortgage twice. After 6 months with Proximity, I closed on my dream home. They removed 11 negative items and my score jumped 236 points. Life changing.',
+    timeframe: '6 months',
+  },
+  {
+    id: '2',
+    name: 'Jasmine R.',
+    city: 'Houston, TX',
+    beforeScore: 541,
+    afterScore: 712,
+    rating: 5,
+    quote:
+      'The team at Proximity is incredibly professional. They explained every step and kept me updated weekly. My score went from 541 to 712 and I finally got approved for a car loan at a great rate.',
+    timeframe: '4 months',
+  },
+  {
+    id: '3',
+    name: 'Derek M.',
+    city: 'Chicago, IL',
+    beforeScore: 489,
+    afterScore: 721,
+    rating: 5,
+    quote:
+      'I had medical bills destroying my credit. Proximity\'s debt validation process removed 8 collection accounts I didn\'t even know were on there. Absolutely worth every penny.',
+    timeframe: '5 months',
+  },
+  {
+    id: '4',
+    name: 'Sofia L.',
+    city: 'Miami, FL',
+    beforeScore: 558,
+    afterScore: 734,
+    rating: 5,
+    quote:
+      'Went from renting forever to owning a home — all because Proximity helped me fix my credit. The team is knowledgeable, fast, and actually cares about your outcome.',
+    timeframe: '7 months',
+  },
+  {
+    id: '5',
+    name: 'Andre W.',
+    city: 'Dallas, TX',
+    beforeScore: 503,
+    afterScore: 691,
+    rating: 5,
+    quote:
+      'I was skeptical at first, but the results speak for themselves. 188-point increase in less than 5 months. They removed late payments, charge-offs — things I thought were permanent.',
+    timeframe: '5 months',
+  },
+  {
+    id: '6',
+    name: 'Keisha B.',
+    city: 'Phoenix, AZ',
+    beforeScore: 529,
+    afterScore: 708,
+    rating: 5,
+    quote:
+      'Professional, transparent, and results-driven. They gave me a game plan on day one and executed it flawlessly. My credit score is now higher than it\'s ever been.',
+    timeframe: '6 months',
+  },
+]
