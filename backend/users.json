@@ -1,0 +1,20 @@
+[
+  {
+    "id": "e2d89f61-5676-4a6f-8b33-15e7be5455aa",
+    "name": "Test User",
+    "email": "test@example.com",
+    "passwordHash": "$2b$12$.2TNaLEoP6SjGYGuJvW64OxK/aruXx8DCmrDeiHtuha0ogT7hRnKy",
+    "createdAt": "2026-04-12T06:51:37.341Z",
+    "plan": "Free Consultation",
+    "creditScore": null
+  },
+  {
+    "id": "f968d3b5-da8b-477d-bbf9-fdd6226e5434",
+    "name": "Jane Smith",
+    "email": "jane@example.com",
+    "passwordHash": "$2b$12$fiRMBKqnRaCjcy8QAGb9yej44oYQRVCnL5eAO7BOp6IaT52CMIc4O",
+    "createdAt": "2026-04-12T06:51:45.679Z",
+    "plan": "Free Consultation",
+    "creditScore": null
+  }
+]

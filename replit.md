@@ -1,7 +1,7 @@
 # Proximity Credit Repair — Project Documentation
 
 ## Overview
-A high-end, premium marketing website for Proximity Credit Repair. Built with React 18 + Vite + TypeScript + Tailwind CSS v3. Features a gold-and-dark luxury design system, animated UI with Framer Motion, and a fully data-driven architecture across 7 pages.
+A high-end, premium marketing website for Proximity Credit Repair with a full authentication system and client portal. Built with React 18 + Vite + TypeScript + Tailwind CSS v3. Features a gold-and-dark luxury design system, animated UI with Framer Motion, JWT-based authentication, and a fully data-driven architecture across 7 public pages plus a protected client dashboard.
 
 ## Tech Stack
 - **Frontend:** React 18 + Vite 5 (TypeScript)
@@ -75,9 +75,21 @@ proximity/
 - All data is centralized in `src/data/` — no strings hardcoded in components
 - TypeScript strict mode passes with zero errors
 
+## Authentication System
+- **Backend:** Express.js REST API on port 3001 (`backend/server.js`)
+- **Routes:** `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`
+- **Tokens:** JWT (7-day expiry), signed with `JWT_SECRET` env var
+- **Passwords:** bcryptjs (12 salt rounds)
+- **Storage:** JSON file (`backend/users.json`) — file-based user persistence
+- **Frontend Store:** Zustand `authStore.ts` with `persist` middleware (localStorage)
+- **Protected Routes:** `ProtectedRoute` component redirects unauthenticated users to `/login`
+- **Pages:** `/login`, `/register`, `/dashboard` (protected)
+- **Navbar:** Shows "Sign In" + "Get Started" when logged out; "Dashboard" + logout icon when logged in
+
 ## Running the App
 ```
-npm run dev --prefix frontend    # Dev server at localhost:5000
+node backend/server.js           # Auth API at localhost:3001
+npm run dev --prefix frontend    # Dev server at localhost:5000 (proxies /api → 3001)
 npm run build --prefix frontend  # Production build
 ```
 

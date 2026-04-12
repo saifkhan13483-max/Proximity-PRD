@@ -1,13 +1,14 @@
 import { useRef, useEffect, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion'
 import {
   Menu, X, Phone, ChevronDown, Star, ArrowRight,
-  Shield, BarChart2, FileText, TrendingUp,
+  Shield, BarChart2, FileText, TrendingUp, LogOut, LayoutDashboard, UserPlus,
 } from 'lucide-react'
 import { navLinks } from '@config/navigation'
 import { cn } from '@lib/utils'
 import { useUIStore } from '@store/uiStore'
+import { useAuthStore } from '@store/authStore'
 
 const SERVICES_DROPDOWN = [
   { label: 'Credit Analysis', href: '/services#credit-analysis', icon: BarChart2, desc: 'Full 3-bureau analysis' },
@@ -107,7 +108,16 @@ export default function Navbar() {
   const mobileMenuOpen = useUIStore((state) => state.mobileMenuOpen)
   const closeMobileMenu = useUIStore((state) => state.closeMobileMenu)
   const toggleMobileMenu = useUIStore((state) => state.toggleMobileMenu)
+  const { user, logout, isAuthenticated } = useAuthStore()
+  const loggedIn = isAuthenticated()
   const location = useLocation()
+  const navigate = useNavigate()
+
+  function handleLogout() {
+    logout()
+    closeMobileMenu()
+    navigate('/')
+  }
 
   const [isScrolled, setIsScrolled] = useState(false)
   const [scrollY, setScrollY] = useState(0)
@@ -330,16 +340,44 @@ export default function Navbar() {
               {/* Divider — desktop only */}
               <div className="hidden lg:block w-px h-5 bg-white/10" />
 
-              {/* CTA — tablet: compact, desktop: full */}
-              <Link
-                to="/contact"
-                className="hidden md:inline-flex items-center gap-1.5 rounded-pill bg-gold-gradient font-heading font-bold text-white shadow-gold-sm hover:shadow-gold-md transition-all duration-200 overflow-hidden px-3.5 py-2 text-xs lg:px-5 lg:py-2.5 lg:text-sm lg:gap-2"
-              >
-                <span className="lg:hidden">Consult</span>
-                <span className="hidden lg:inline">Free Consultation</span>
-                <ArrowRight size={12} className="lg:hidden" />
-                <ArrowRight size={14} className="hidden lg:inline" />
-              </Link>
+              {/* Auth / CTA — desktop */}
+              {loggedIn ? (
+                <div className="hidden md:flex items-center gap-2">
+                  <Link
+                    to="/dashboard"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-gold-primary/10 border border-gold-primary/25 text-gold-primary font-body font-semibold text-sm hover:bg-gold-primary/20 transition-all duration-200"
+                  >
+                    <LayoutDashboard size={14} />
+                    <span className="hidden lg:inline">{user?.name?.split(' ')[0] || 'Dashboard'}</span>
+                    <span className="lg:hidden">Portal</span>
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center justify-center w-8 h-8 rounded-lg text-white/40 hover:text-white/70 hover:bg-white/5 transition-all duration-200"
+                    aria-label="Sign out"
+                  >
+                    <LogOut size={15} />
+                  </button>
+                </div>
+              ) : (
+                <div className="hidden md:flex items-center gap-2">
+                  <Link
+                    to="/login"
+                    className="px-3.5 py-2 rounded-lg font-body font-semibold text-sm text-white/60 hover:text-white hover:bg-white/5 transition-all duration-200"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="inline-flex items-center gap-1.5 rounded-pill bg-gold-gradient font-heading font-bold text-white shadow-gold-sm hover:shadow-gold-md transition-all duration-200 overflow-hidden px-3.5 py-2 text-xs lg:px-5 lg:py-2.5 lg:text-sm lg:gap-2"
+                  >
+                    <UserPlus size={12} className="lg:hidden" />
+                    <span className="lg:hidden">Register</span>
+                    <span className="hidden lg:inline">Get Started</span>
+                    <ArrowRight size={14} className="hidden lg:inline" />
+                  </Link>
+                </div>
+              )}
 
               {/* Hamburger — mobile and tablet (hidden on desktop) */}
               <button
@@ -511,13 +549,42 @@ export default function Navbar() {
                   <Phone size={14} />
                   (800) 555-0192
                 </a>
-                <Link
-                  to="/contact"
-                  onClick={closeMobileMenu}
-                  className="flex items-center justify-center gap-2 w-full py-3 rounded-pill bg-gold-gradient text-white font-heading font-bold text-sm shadow-gold-sm"
-                >
-                  Free Consultation <ArrowRight size={14} />
-                </Link>
+                {loggedIn ? (
+                  <>
+                    <Link
+                      to="/dashboard"
+                      onClick={closeMobileMenu}
+                      className="flex items-center justify-center gap-2 w-full py-3 rounded-pill bg-gold-gradient text-white font-heading font-bold text-sm shadow-gold-sm"
+                    >
+                      <LayoutDashboard size={14} />
+                      My Dashboard
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center justify-center gap-2 w-full py-3 rounded-lg border border-white/10 text-white/50 hover:text-white font-body font-semibold text-sm transition-colors"
+                    >
+                      <LogOut size={14} />
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/register"
+                      onClick={closeMobileMenu}
+                      className="flex items-center justify-center gap-2 w-full py-3 rounded-pill bg-gold-gradient text-white font-heading font-bold text-sm shadow-gold-sm"
+                    >
+                      Get Started <ArrowRight size={14} />
+                    </Link>
+                    <Link
+                      to="/login"
+                      onClick={closeMobileMenu}
+                      className="flex items-center justify-center gap-2 w-full py-3 rounded-lg border border-white/10 text-white/50 hover:text-white font-body font-semibold text-sm transition-colors"
+                    >
+                      Sign In
+                    </Link>
+                  </>
+                )}
               </div>
 
               <div className="px-4 pb-5">
