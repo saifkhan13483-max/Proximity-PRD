@@ -1,0 +1,56 @@
+Root Cause: Railpack Can't Detect Your App Type
+The error "Error creating build plan with Railpack" means Railway's builder looked at the files in your deployment root and couldn't figure out what kind of app it is. This almost always happens for one of these reasons:
+
+Most Likely Cause: Wrong Root Directory
+Your project structure is probably something like this:
+
+Copymy-project/          ← Railway is looking HERE (the repo root)
+├── frontend/
+│   └── package.json
+├── backend/
+│   ├── package.json
+│   ├── server.js
+│   └── railway.toml
+├── README.md         ← You just committed a README update
+└── replit.md
+Railway is scanning the repo root, which has no package.json, no server.js, no detectable app — so Railpack gives up. It needs to be pointed at the backend/ folder.
+
+The Fix (Step by Step)
+Option A — Set the Root Directory in Railway Dashboard (Recommended):
+
+Go to your Railway project → click on the service
+Go to Settings → Source
+Set Root Directory to: backend
+Redeploy
+Option B — Use railway.toml at the repo root (not inside backend/):
+
+If you want to keep it config-driven, move or create railway.toml at the repo root with:
+
+Copy[build]
+builder = "nixpacks"
+
+[build.nixpacks]
+buildCmd = "cd backend && npm install"
+
+[deploy]
+startCommand = "cd backend && node server.js"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+Option C — Add a nixpacks.toml or railpack.json in backend/:
+
+If you've already set the root directory to backend/ and it still fails, create a railpack.json inside backend/:
+
+Copy{
+  "$schema": "https://schema.railpack.com",
+  "provider": "node",
+  "deploy": {
+    "startCommand": "node server.js"
+  }
+}
+Quick Checklist Before Redeploying
+Confirm backend/package.json exists with a valid "main" or "start" script
+Confirm backend/server.js exists (or whatever your entry point is)
+Set Root Directory = backend in Railway dashboard
+Verify railway.toml is either in backend/ (if root dir is set to backend) or at the repo root (with explicit cd backend commands)
+Remove any conflicting config — don't have both a Dockerfile and railway.toml unless you intentionally want Docker builds
