@@ -1,4 +1,5 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { useEffect } from 'react'
+  import { motion, AnimatePresence } from 'framer-motion'
   import { useForm } from 'react-hook-form'
   import { zodResolver } from '@hookform/resolvers/zod'
   import { Phone, Mail, MapPin, Map, Loader2, CheckCircle } from 'lucide-react'
@@ -25,6 +26,10 @@ import { motion, AnimatePresence } from 'framer-motion'
   export default function Contact() {
     const { submissionStatus, setSubmissionStatus } = useFormStore()
     const addToast = useUIStore((state) => state.addToast)
+
+    useEffect(() => {
+      setSubmissionStatus('idle')
+    }, [])
 
     const {
       register,
@@ -57,7 +62,7 @@ import { motion, AnimatePresence } from 'framer-motion'
     }
 
     return (
-      <PageWrapper>
+      <PageWrapper dark>
         <SEOHead
           title="Contact Us — Start Your Free Credit Consultation"
           description="Get in touch with Proximity Credit Repair. Schedule your free consultation and take the first step toward rebuilding your credit. Call, email, or use our contact form."

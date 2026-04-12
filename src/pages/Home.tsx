@@ -20,7 +20,7 @@ import PageWrapper from '@components/layout/PageWrapper'
 
   export default function Home() {
     return (
-      <PageWrapper>
+      <PageWrapper noPaddingTop>
         <SEOHead
           title="Expert Credit Repair Services That Deliver Real Results"
           description={siteMetadata.siteDescription}

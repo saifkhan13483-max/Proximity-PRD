@@ -66,7 +66,7 @@ import { useState } from 'react'
 
   export default function About() {
     return (
-      <PageWrapper>
+      <PageWrapper dark>
         <SEOHead
           title="About Us — Our Mission, Team & Values"
           description="Meet the expert team behind Proximity Credit Repair. Dedicated to empowering clients with proven, transparent credit repair strategies. Discover our mission, values, and the specialists fighting for your financial future."

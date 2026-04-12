@@ -60,7 +60,7 @@ import { motion } from 'framer-motion'
 
   export default function HowItWorks() {
     return (
-      <PageWrapper>
+      <PageWrapper dark>
         <SEOHead
           title="How Credit Repair Works — Our Proven 4-Step Process"
           description="Learn exactly how Proximity Credit Repair works. From your free consultation to full credit review, expert dispute filing, and ongoing progress monitoring — four steps to a better score."

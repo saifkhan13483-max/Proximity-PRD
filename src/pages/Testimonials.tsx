@@ -20,7 +20,7 @@ import { motion } from 'framer-motion'
     const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 })
 
     return (
-      <PageWrapper>
+      <PageWrapper dark>
         <SEOHead
           title="Client Testimonials & Credit Repair Success Stories"
           description="Read real success stories from Proximity Credit Repair clients who improved their credit scores by 100–175+ points. Before/after results from clients across the United States."

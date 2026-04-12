@@ -67,7 +67,7 @@ import { motion } from 'framer-motion'
 
   export default function Services() {
     return (
-      <PageWrapper>
+      <PageWrapper dark>
         <SEOHead
           title="Credit Repair Services — Analysis, Disputes, Monitoring & Debt Validation"
           description="Explore Proximity Credit Repair's full suite of services: Credit Analysis, Dispute Filing, Score Monitoring, and Debt Validation. Expert strategies tailored to your unique credit profile."

@@ -29,7 +29,7 @@ import { useState } from 'react'
     const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id))
 
     return (
-      <PageWrapper>
+      <PageWrapper dark>
         <SEOHead
           title="FAQ — Your Credit Repair Questions Answered"
           description="Find answers to the most common credit repair questions. Learn about the process, timeline, compliance, and what to expect when working with Proximity Credit Repair."

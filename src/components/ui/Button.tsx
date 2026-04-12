@@ -57,6 +57,7 @@ export default function Button({
           rel="noopener noreferrer"
           className={classes}
           aria-disabled={disabled}
+          onClick={onClick}
           {...motionProps}
         >
           {children}
@@ -65,7 +66,7 @@ export default function Button({
     }
 
     return (
-      <MotionLink to={href} className={classes} aria-disabled={disabled} {...motionProps}>
+      <MotionLink to={href} className={classes} aria-disabled={disabled} onClick={onClick} {...motionProps}>
         {children}
       </MotionLink>
     )
