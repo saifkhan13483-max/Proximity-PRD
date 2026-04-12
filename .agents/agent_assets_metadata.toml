@@ -1,8 +1,13 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "FUZA_0y8mgd3sXC0PPxxB"
 uri = "file://frontend/public/og-image.png"
 type = "image"
 title = "proximity credit repair og banner"
+
+[[outputs]]
+id = "yuO8gK6rcbEMqK6aXV4iT"
+uri = "file://DEPLOYMENT.md"
+type = "text"
+title = "Proximity Credit Repair — Deployment Guide"
