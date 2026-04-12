@@ -36,7 +36,7 @@ function LogoMark() {
       aria-label="Proximity Credit Repair — Home"
     >
       <div className="relative flex-shrink-0 group-hover:drop-shadow-[0_0_8px_rgba(184,146,74,0.6)] transition-all duration-300">
-        <ProximityLogo size={36} className="sm:w-[38px] sm:h-[38px]" />
+        <ProximityLogo size={32} />
       </div>
       <div className="flex flex-col leading-none">
         <span className="font-heading font-extrabold text-sm sm:text-base lg:text-lg gold-gradient-text tracking-tight">
