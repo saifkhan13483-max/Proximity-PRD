@@ -4,6 +4,8 @@ import { motion } from 'framer-motion'
 import { User, Mail, Lock, Eye, EyeOff, ArrowRight, Shield } from 'lucide-react'
 import { useAuthStore } from '@store/authStore'
 import { registerUser } from '@services/authService'
+import { Button } from '@components/ui'
+import { Label } from '@components/ui'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -54,10 +56,13 @@ export default function Register() {
         <div className="bg-[#111111] border border-gold-primary/20 rounded-2xl p-5 sm:p-8 shadow-gold-lg">
           <form onSubmit={handleSubmit} className="space-y-5" noValidate>
             <div>
-              <label className="block font-body text-sm font-medium text-white/70 mb-2">Full Name</label>
+              <Label htmlFor="name" className="block font-body text-sm font-medium text-white/70 mb-2">
+                Full Name
+              </Label>
               <div className="relative">
                 <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" />
                 <input
+                  id="name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -70,10 +75,13 @@ export default function Register() {
             </div>
 
             <div>
-              <label className="block font-body text-sm font-medium text-white/70 mb-2">Email Address</label>
+              <Label htmlFor="email" className="block font-body text-sm font-medium text-white/70 mb-2">
+                Email Address
+              </Label>
               <div className="relative">
                 <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" />
                 <input
+                  id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -86,10 +94,13 @@ export default function Register() {
             </div>
 
             <div>
-              <label className="block font-body text-sm font-medium text-white/70 mb-2">Password</label>
+              <Label htmlFor="password" className="block font-body text-sm font-medium text-white/70 mb-2">
+                Password
+              </Label>
               <div className="relative">
                 <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" />
                 <input
+                  id="password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -120,10 +131,12 @@ export default function Register() {
               </motion.div>
             )}
 
-            <button
+            <Button
               type="submit"
+              variant="primary"
+              size="md"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-gold-gradient text-white font-heading font-bold text-sm rounded-pill py-3.5 shadow-gold-sm hover:shadow-gold-md transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full justify-center py-3.5 text-sm"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -133,7 +146,7 @@ export default function Register() {
               ) : (
                 <>Create Account <ArrowRight size={15} /></>
               )}
-            </button>
+            </Button>
           </form>
 
           <div className="mt-6 text-center">

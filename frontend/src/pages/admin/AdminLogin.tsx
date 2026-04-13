@@ -5,6 +5,8 @@ import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import ProximityLogo from '@components/ui/ProximityLogo'
 import { useAuthStore } from '@store/authStore'
 import { loginUser } from '@services/authService'
+import { Button } from '@components/ui'
+import { Label } from '@components/ui'
 
 export default function AdminLogin() {
   const navigate = useNavigate()
@@ -60,26 +62,32 @@ export default function AdminLogin() {
         <div className="bg-[#111] border border-gold-primary/20 rounded-2xl p-7 shadow-gold-lg">
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
-              <label className="block font-body text-xs font-semibold text-white/50 uppercase tracking-widest mb-2">Email</label>
+              <Label htmlFor="admin-email" className="block font-body text-xs font-semibold text-white/50 uppercase tracking-widest mb-2">
+                Email
+              </Label>
               <div className="relative">
                 <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/25" />
                 <input
+                  id="admin-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   autoComplete="email"
-                  placeholder="saifkhan13483@gmail.com"
+                  placeholder="admin@example.com"
                   className="w-full bg-[#1a1a1a] border border-white/8 rounded-xl pl-10 pr-4 py-3 font-body text-sm text-white placeholder-white/20 focus:outline-none focus:border-gold-primary/40 focus:ring-1 focus:ring-gold-primary/20 transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block font-body text-xs font-semibold text-white/50 uppercase tracking-widest mb-2">Password</label>
+              <Label htmlFor="admin-password" className="block font-body text-xs font-semibold text-white/50 uppercase tracking-widest mb-2">
+                Password
+              </Label>
               <div className="relative">
                 <Lock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/25" />
                 <input
+                  id="admin-password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -108,10 +116,12 @@ export default function AdminLogin() {
               </motion.p>
             )}
 
-            <button
+            <Button
               type="submit"
+              variant="primary"
+              size="md"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-gold-gradient text-white font-heading font-bold text-sm rounded-xl py-3 shadow-gold-sm hover:shadow-gold-md transition-all disabled:opacity-60"
+              className="w-full justify-center py-3 text-sm rounded-xl"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -119,7 +129,7 @@ export default function AdminLogin() {
                   Signing in...
                 </span>
               ) : 'Sign In to Admin'}
-            </button>
+            </Button>
           </form>
         </div>
 
