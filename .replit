@@ -52,3 +52,8 @@ externalPort = 80
 
 [nix]
 channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+VITE_CLOUDINARY_CLOUD_NAME = "de2wrwg6e"
