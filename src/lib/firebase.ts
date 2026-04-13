@@ -1,6 +1,6 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app'
 import { getAuth, type Auth } from 'firebase/auth'
-import { getFirestore, enableIndexedDbPersistence, type Firestore } from 'firebase/firestore'
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, getFirestore, type Firestore } from 'firebase/firestore'
 
 declare const __FB_API_KEY__: string
 declare const __FB_AUTH_DOMAIN__: string
@@ -27,17 +27,16 @@ if (apiKey) {
     }
     app = initializeApp(firebaseConfig)
     auth = getAuth(app)
-    db = getFirestore(app)
 
-    enableIndexedDbPersistence(db).catch((err: { code: string }) => {
-      if (err.code === 'failed-precondition') {
-        console.warn('[firebase] Firestore offline persistence unavailable: multiple tabs open.')
-      } else if (err.code === 'unimplemented') {
-        console.warn('[firebase] Firestore offline persistence is not available in this browser.')
-      } else {
-        console.warn('[firebase] Firestore offline persistence error:', err)
-      }
-    })
+    try {
+      db = initializeFirestore(app, {
+        localCache: persistentLocalCache({
+          tabManager: persistentMultipleTabManager(),
+        }),
+      })
+    } catch {
+      db = getFirestore(app)
+    }
   } catch (err) {
     console.warn('[firebase] Failed to initialize Firebase client SDK:', err)
   }

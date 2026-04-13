@@ -1,7 +1,7 @@
 # Proximity Credit Repair — Project Documentation
 
 ## Overview
-A high-end, premium marketing website for Proximity Credit Repair with a full authentication system and client portal. Built with React 18 + Vite + TypeScript + Tailwind CSS v3. Features a gold-and-dark luxury design system, animated UI with Framer Motion, JWT-based authentication, and a fully data-driven architecture across 7 public pages plus a protected client dashboard.
+A high-end, premium marketing website and client portal for Proximity Credit Repair. Built with React 18 + Vite + TypeScript + Tailwind CSS v3. Features a gold-and-dark luxury design system, animated UI with Framer Motion, Firebase Authentication, Firestore database, and a fully data-driven architecture across 7 public pages plus a protected client dashboard and admin panel.
 
 ## Tech Stack
 - **Frontend:** React 18 + Vite 5 (TypeScript)
@@ -9,27 +9,28 @@ A high-end, premium marketing website for Proximity Credit Repair with a full au
 - **UI Primitives:** shadcn/ui — Dialog, Label via Radix UI; Button uses class-variance-authority
 - **Animations:** Framer Motion v10
 - **Routing:** React Router v6 (lazy-loaded routes + `v7_startTransition` future flag)
-- **Images:** Cloudinary CDN via `src/lib/cloudinary.ts` (`VITE_CLOUDINARY_CLOUD_NAME` env var)
-- **Database:** Firestore with offline IndexedDB persistence enabled
-- **State/Forms:** Zustand, React Hook Form + Zod validation
+- **Auth & Database:** Firebase Client SDK (Auth + Firestore with persistent multi-tab cache)
+- **State/Forms:** Zustand (with persist middleware), React Hook Form + Zod validation
 - **Data Fetching:** TanStack Query (React Query)
 - **Icons:** Lucide React
 - **Counters:** Custom `useCountUp` hook with IntersectionObserver
+- **Error Handling:** React ErrorBoundary (catches unhandled component errors)
 
 ## Project Structure
 ```
 proximity/  (root = frontend)
 ├── src/
-│   ├── main.tsx               # App entry point
+│   ├── main.tsx               # App entry point — sets up token refresh listener, ErrorBoundary
 │   ├── App.tsx                # Router setup, lazy-loaded routes
 │   ├── components/
+│   │   ├── ErrorBoundary.tsx  # Top-level React error boundary (class component)
 │   │   ├── admin/
 │   │   │   └── AdminLayout.tsx
 │   │   ├── auth/
 │   │   │   ├── ProtectedRoute.tsx   # Redirects unauthenticated users
 │   │   │   └── AdminRoute.tsx       # Redirects non-admin users
 │   │   ├── layout/
-│   │   │   ├── AppLayout.tsx        # Root layout with Navbar + Footer
+│   │   │   ├── AppLayout.tsx        # Root layout with Navbar + Footer + Suspense
 │   │   │   ├── Navbar.tsx
 │   │   │   ├── Footer.tsx
 │   │   │   ├── PageWrapper.tsx
@@ -53,8 +54,8 @@ proximity/  (root = frontend)
 │   │   ├── Home.tsx, About.tsx, Services.tsx
 │   │   ├── HowItWorks.tsx, Testimonials.tsx, FAQ.tsx
 │   │   ├── Contact.tsx, Pricing.tsx, NotFound.tsx
-│   │   ├── Login.tsx          # Firebase Auth sign-in (uses shadcn Label + Button)
-│   │   ├── Register.tsx       # Firebase Auth registration (uses shadcn Label + Button)
+│   │   ├── Login.tsx          # Firebase Auth sign-in
+│   │   ├── Register.tsx       # Firebase Auth registration
 │   │   ├── Dashboard.tsx      # Protected client portal
 │   │   └── admin/
 │   │       ├── AdminLogin.tsx
@@ -69,12 +70,12 @@ proximity/  (root = frontend)
 │   │   ├── api.ts             # Base apiRequest helper + API_BASE constant
 │   │   └── index.ts
 │   ├── store/
-│   │   ├── authStore.ts       # Zustand auth state (user, token) — persisted to localStorage
+│   │   ├── authStore.ts       # Zustand auth state (user, token) — persisted to localStorage; setToken for refresh
 │   │   ├── uiStore.ts
 │   │   ├── formStore.ts
 │   │   └── index.ts
 │   ├── lib/
-│   │   ├── firebase.ts        # Firebase web SDK init — exports auth + db; offline persistence enabled
+│   │   ├── firebase.ts        # Firebase web SDK — initializeFirestore with persistentLocalCache
 │   │   ├── cloudinary.ts      # getImageUrl() — builds Cloudinary CDN URLs
 │   │   ├── animations.ts
 │   │   ├── utils.ts           # cn() (clsx + twMerge), formatPhone, truncate
@@ -97,8 +98,10 @@ proximity/  (root = frontend)
 ├── public/
 │   ├── favicon.svg, og-image.png, robots.txt, sitemap.xml
 ├── backend/
-│   ├── server.js              # Express API — all routes, middleware, admin seed
-│   ├── firebase.js            # Firebase Admin SDK init — exports db + adminAuth
+│   ├── server.js              # Express entry — graceful SIGTERM/SIGINT shutdown
+│   ├── app.js                 # Express API — helmet, rate limiting, compression, all routes
+│   ├── firebase.js            # Firebase Admin SDK init
+│   ├── .env.example           # Template for required environment variables
 │   └── package.json
 ├── api/
 │   └── index.js               # Vercel serverless entry — wraps backend/app
@@ -113,7 +116,6 @@ proximity/  (root = frontend)
 ├── postcss.config.js
 ├── eslint.config.js
 ├── tsconfig.json
-├── tsconfig.node.json
 ├── components.json            # shadcn/ui config
 ├── package.json               # Frontend deps (React, Vite, Tailwind, etc.)
 ├── vercel.json
@@ -132,130 +134,81 @@ proximity/  (root = frontend)
 - **Off White:** `#F9F6F1`
 - **Fonts:** Montserrat (headings) + Open Sans (body) — Google Fonts
 
-## Pages (Phase 7 — Fully Implemented)
+## Pages
 1. **Home** (`/`) — Full-screen hero with particles + animated headline, animated stat counters, services preview, how-it-works strip, testimonials auto-slider, CTA band
-2. **About** (`/about`) — Sub-hero banner, mission blockquote with gold accent bar, core values grid, team grid with hover bio overlay
-3. **Services** (`/services`) — Sub-hero, 7 alternating service detail sections with hash IDs for anchor navigation: Credit Analysis, Dispute Filing, Score Monitoring, Debt Validation, Creditor Negotiation, Educational Resources, Identity Theft Protection. CTA strip at bottom.
-4. **How It Works** (`/how-it-works`) — Sub-hero, 4-step timeline with animated gold connector lines (desktop) and vertical connectors (mobile)
-5. **Testimonials** (`/testimonials`) — Sub-hero, trust badges row, full 8-card testimonials grid, video placeholder
-6. **FAQ** (`/faq`) — Sub-hero, animated accordion organized by 2 categories (5 items each), only 1 item open at a time
-7. **Contact** (`/contact`) — Split layout: contact info + form with Zod validation, phone auto-format, animated success state + toast
-
-## Key Architectural Notes
-- `PageWrapper` uses `noPaddingTop` on Home (hero handles its own spacing) and `dark` on all other pages (dark sub-hero blends with transparent navbar)
-- `Button` component handles internal Links, external `<a>` tags, and `<button>` elements — `onClick` is passed to all variants
-- `AppLayout` uses `ScrollToTop` to reset scroll position on route change
-- Contact form resets submission status on mount to prevent stale success state on revisit
-- All data is centralized in `src/data/` — no strings hardcoded in components
-- TypeScript strict mode passes with zero errors
+2. **About** (`/about`) — Sub-hero banner, mission blockquote with gold accent bar, core values grid, team grid
+3. **Services** (`/services`) — 7 alternating service detail sections with hash IDs for anchor navigation
+4. **How It Works** (`/how-it-works`) — 4-step timeline with animated gold connector lines
+5. **Testimonials** (`/testimonials`) — Trust badges row, full 8-card testimonials grid
+6. **FAQ** (`/faq`) — Animated accordion organized by 2 categories
+7. **Contact** (`/contact`) — Split layout: contact info + form with Zod validation, animated success state
 
 ## Authentication System
 - **Backend:** Express.js REST API on port 3001 (`backend/server.js`)
-- **Auth Routes:** `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`
+- **Security:** helmet (security headers), express-rate-limit, compression (gzip), input sanitization
+- **Rate Limits:** Auth routes — 20 req/15min; Contact form — 10 req/hour; General API — 200 req/15min
+- **Auth Routes:** `POST /api/auth/profile`, `GET /api/auth/me`
 - **Contact Route:** `POST /api/contacts` — stores contact form submissions in Firestore `contacts` collection
-- **Tokens:** JWT (7-day expiry), signed with `JWT_SECRET` env var, includes `role` claim
-- **Passwords:** bcryptjs (12 salt rounds)
-- **Storage:** Google Cloud Firestore — `users` collection (users), `contacts` collection (contact leads)
-- **Firebase Module:** `backend/firebase.js` — initializes Firebase Admin SDK using `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY` secrets
-- **Frontend Store:** Zustand `authStore.ts` with `persist` middleware (localStorage)
+- **Firebase Auth:** ID tokens verified server-side via Firebase Admin SDK
+- **Token Refresh:** Automatic via Firebase `onIdTokenChanged` listener initialized in `main.tsx`
+- **Storage:** Google Cloud Firestore — `users` collection, `contacts` collection
+- **Firestore Persistence:** `persistentLocalCache` with `persistentMultipleTabManager` (multi-tab support)
+- **Frontend Store:** Zustand `authStore.ts` with `persist` middleware (localStorage); `setToken` for refresh
+- **Error Boundary:** Top-level `ErrorBoundary` component catches unhandled React errors
 - **Protected Routes:** `ProtectedRoute` (user) and `AdminRoute` (admin only)
-- **User Pages:** `/login`, `/register`, `/dashboard` (protected)
-- **Admin Pages:** `/admin/login`, `/admin`, `/admin/users`, `/admin/contacts`
-- **Navbar:** Shows "Sign In"/"Get Started" when logged out; "Dashboard"/"Admin Panel" + logout when logged in
-
-## Pricing System
-- **Page:** `/pricing` — Full pricing page with 4 plan tiers and monthly/annual billing toggle (20% annual discount)
-- **Plans:** Basic ($49/mo), Standard ($99/mo, highlighted), Premium ($149/mo), VIP ($199/mo)
-- **Plan Selection:** Authenticated users can select/upgrade plans directly from the pricing page; changes are saved to the backend and reflected in the navbar/dashboard immediately
-- **Unauthenticated flow:** Clicking a plan CTA redirects to `/register`
-- **Dashboard integration:** Shows current plan benefits, upgrade prompt for lower-tier users, and links to pricing
-- **Data file:** `frontend/src/data/plans.ts`
-- **Backend route:** `POST /api/users/plan` — updates the logged-in user's plan
 
 ## Admin Panel
-- **Default Credentials:** `admin@proximity.com` / `Admin@2026!` (seeded on first run)
+- **Default Admin:** Created via environment variables `ADMIN_EMAIL` + `ADMIN_PASSWORD` (seeded on first run when Firebase is configured)
 - **Dashboard:** Stats overview — total users, contact leads, unread leads, plan distribution
 - **Users:** Full table with search, edit plan, delete user
-- **Contacts:** All contact form submissions — expandable cards, status management (new/in-progress/resolved), reply by email, delete
-- **Admin Routes (backend):** `GET /api/admin/stats`, `GET /api/admin/users`, `PATCH /api/admin/users/:id`, `DELETE /api/admin/users/:id`, `GET /api/admin/contacts`, `PATCH /api/admin/contacts/:id`, `DELETE /api/admin/contacts/:id`
+- **Contacts:** All contact form submissions — expandable cards, status management, reply by email, delete
 
-## Running the App
+## Required Secrets (Replit)
+
+Set these in the Replit Secrets tab (or via environment variables):
+
+### Backend (Firebase Admin SDK — pick one option):
+| Secret | Description |
+|--------|-------------|
+| `FIREBASE_SERVICE_ACCOUNT_JSON` | Full service account JSON blob (recommended — paste the entire JSON) |
+| OR `FIREBASE_PROJECT_ID` + `FIREBASE_CLIENT_EMAIL` + `FIREBASE_PRIVATE_KEY` | Individual credentials (alternative) |
+| `ADMIN_EMAIL` | Email for the seeded admin account |
+| `ADMIN_PASSWORD` | Strong password for the seeded admin account |
+
+### Frontend (Firebase Client SDK):
+| Secret | Description |
+|--------|-------------|
+| `apiKey` | Firebase Web API key |
+| `authDomain` | Firebase Auth domain (`your-project.firebaseapp.com`) |
+| `projectId` | Firebase project ID |
+| `storageBucket` | Firebase storage bucket |
+| `messagingSenderId` | Firebase messaging sender ID |
+| `appId` | Firebase App ID |
+
+## Running the App (Replit)
+- **Start application** workflow: `npm run dev` → serves frontend at port 5000
+- **Auth API** workflow: `node backend/server.js` → backend at port 3001
+- Vite proxies `/api/*` requests from port 5000 → 3001 automatically
+
+## Production Architecture (Replit Deployment)
 ```
-node backend/server.js           # Auth API at localhost:3001
-npm run dev --prefix frontend    # Dev server at localhost:5000 (proxies /api → 3001)
-npm run build --prefix frontend  # Production build
+Browser → Replit deployment (frontend + backend bundled)
+  Frontend: Vite build (dist/) served as static files
+  Backend: node backend/server.js on PORT
+  /api/* → backend Express routes
 ```
 
-## Production Architecture
-
-```
-Browser → Vercel (frontend)
-           ├── /              → serves React SPA (dist/index.html)
-           ├── /assets/*      → immutable hashed static assets (1-year cache)
-           └── /api/*         → proxy rewrite → Railway (backend)
-
-Railway (backend)
-  node backend/server.js
-  PORT assigned dynamically by Railway
-  /api/health  — Railway health check endpoint
-```
-
-### Deployment Files
-- `vercel.json` (project root) — Vercel build config: SPA fallback rewrites, `/api/*` proxy to Railway, cache-control headers
-- `backend/railway.toml` — Railway build + deploy config pointing to `node server.js`
-
-### Required Environment Variables
-
-**Backend (Railway):**
-| Variable | Description |
-|----------|-------------|
-| `JWT_SECRET` | Long random string for signing JWTs — **required**, server refuses to start without it |
-| `PORT` | Assigned automatically by Railway |
-| `ALLOWED_ORIGINS` | Comma-separated list of allowed CORS origins (e.g. `https://your-app.vercel.app,http://localhost:5000`) |
-| `FIREBASE_PROJECT_ID` | Firebase project ID from service account JSON |
-| `FIREBASE_CLIENT_EMAIL` | Firebase client email from service account JSON |
-| `FIREBASE_PRIVATE_KEY` | Firebase private key from service account JSON (include full PEM block) |
-
-See `backend/.env.example` for a template.
-
-**Frontend (Vercel):**
-| Variable | Description |
-|----------|-------------|
-| `VITE_API_URL` | Backend base URL — used by Vite dev-server proxy (defaults to `http://localhost:3001`). In Vercel production, `/api/*` calls are rewritten via `vercel.json`. |
-| `VITE_SITE_URL` | Canonical site URL for SEO / Open Graph |
-| `VITE_ANALYTICS_ID` | Google Analytics 4 Measurement ID (e.g. `G-XXXXXXXXXX`) |
-
-See `frontend/.env.example` for a template.
-
-### Deploy Steps
-1. **Railway backend:**
-   - Create a new Railway project, connect the repo, set root to `backend/`
-   - Set `JWT_SECRET` and `ALLOWED_ORIGINS` environment variables
-   - Railway uses `railway.toml` to run `node server.js` automatically
-2. **Vercel frontend:**
-   - Create a new Vercel project, connect the repo
-   - In `vercel.json`, replace `https://your-railway-backend.up.railway.app` with the actual Railway URL
-   - Set `VITE_SITE_URL` and optionally `VITE_ANALYTICS_ID`
-   - Vercel uses `vercel.json` (root dir `frontend`, build `npm run build`, output `dist`)
-
-## Production Readiness (Completed)
-- All contact info unified: phone `(800) 555-0192`, email `hello@proximitycreditrepair.com`, address `123 Financial Plaza, Suite 400, Atlanta, GA 30301` — sourced from `siteConfig` everywhere
-- Social media links removed from Footer until real URLs are configured in `siteConfig`
-- `robots.txt` and `sitemap.xml` created in `frontend/public/`
-- OG image generated and placed at `frontend/public/og-image.png`
-- `SEOHead` updated: adds `og:type`, `og:site_name`, `og:image:width/height`, `twitter:image`, `meta[name=robots]`, and per-page `keywords`
-- All 7 pages have unique meta keywords
-- `index.html` has full OG/Twitter card meta, theme-color, apple-touch-icon, color-scheme
-- `OptimizedImage` has `onError` fallback rendering (shows alt text div or fallbackSrc)
-- `Modal` has proper focus trap and restores focus on close
-- `analyticsService` integrated with GA4's `window.gtag` API, no console.logs
-- `contactService` returns honest error when `VITE_CONTACT_API_URL` is not configured (no fake success)
-- Team member photos use `ui-avatars.com` API (gold/white initials avatars) until real photos are provided
-- Contact page: "Interactive map coming soon" replaced with real Google Maps embed (dark-theme via CSS filter)
-- HeroSection scroll-down link uses proper `<a>` tag with smooth scroll handler (not React Router `<Link>`)
-- Navbar `boxShadow` animation fixed (was animating to `"none"` which Framer Motion can't interpolate)
-- Dynamic copyright year in Footer (no hardcoded year)
+## Security Features (Production)
+- `helmet` — sets X-Frame-Options, X-Content-Type-Options, HSTS, and other security headers
+- `express-rate-limit` — prevents brute force on auth and contact endpoints
+- `compression` — gzip for all responses
+- Input sanitization — strips whitespace, enforces max lengths, validates email format
+- CORS — allows only `.replit.dev`, `.replit.app`, `.vercel.app`, and `ALLOWED_ORIGINS`
+- Admin credentials via env vars — never hardcoded
+- Firebase token verification — all protected routes verify Firebase ID tokens server-side
+- Automatic token refresh — `onIdTokenChanged` keeps stored token fresh (Firebase tokens expire in 1h)
 
 ## Notes
 - Framer Motion pinned to v10 (v11+ dist structure incompatibility with Vite)
 - `v7_startTransition` future flag set on `RouterProvider` to suppress React Router v7 migration warning
+- `initializeFirestore` with `persistentLocalCache` replaces deprecated `enableIndexedDbPersistence`

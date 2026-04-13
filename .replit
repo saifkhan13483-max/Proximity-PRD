@@ -57,3 +57,11 @@ channel = "stable-25_05"
 
 [userenv.shared]
 VITE_CLOUDINARY_CLOUD_NAME = "de2wrwg6e"
+
+[userenv.production]
+PORT = "3001"
+NODE_ENV = "production"
+
+[userenv.development]
+PORT = "3001"
+NODE_ENV = "development"
