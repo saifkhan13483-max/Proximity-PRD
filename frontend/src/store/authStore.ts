@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { signOut } from 'firebase/auth'
+import { auth } from '@lib/firebase'
 
 export interface AuthUser {
   id: string
@@ -32,7 +34,10 @@ export const useAuthStore = create<AuthStore>()(
       setAuth: (user, token) => set({ user, token }),
       setLoading: (isLoading) => set({ isLoading }),
       updateUser: (user) => set({ user }),
-      logout: () => set({ user: null, token: null }),
+      logout: () => {
+        signOut(auth).catch(() => {})
+        set({ user: null, token: null })
+      },
       isAuthenticated: () => !!get().token && !!get().user,
       isAdmin: () => get().user?.role === 'admin',
     }),
