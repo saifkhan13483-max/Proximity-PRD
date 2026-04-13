@@ -36,20 +36,40 @@ function firebaseErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Authentication failed'
 }
 
+function buildFallbackUser(uid: string, email: string, name: string): AuthUser {
+  return {
+    id: uid,
+    name: name || email.split('@')[0],
+    email: email.toLowerCase(),
+    plan: 'Free Consultation',
+    role: 'user',
+    createdAt: new Date().toISOString(),
+    creditScore: null,
+  }
+}
+
 export async function registerUser(name: string, email: string, password: string): Promise<AuthResponse> {
   if (!auth) throw new Error('Authentication is not configured. Please contact the site administrator.')
   try {
     const credential = await createUserWithEmailAndPassword(auth, email, password)
     await updateProfile(credential.user, { displayName: name })
     const token = await credential.user.getIdToken()
-    const user = await apiRequest<AuthUser>(`${BASE}/profile`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
-      body: JSON.stringify({ name }),
-    })
-    return { token, user }
+
+    try {
+      const user = await apiRequest<AuthUser>(`${BASE}/profile`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
+        body: JSON.stringify({ name }),
+      })
+      return { token, user }
+    } catch {
+      return { token, user: buildFallbackUser(credential.user.uid, email, name) }
+    }
   } catch (err) {
-    throw new Error(firebaseErrorMessage(err))
+    if (err && typeof err === 'object' && 'code' in err) {
+      throw new Error(firebaseErrorMessage(err))
+    }
+    throw err
   }
 }
 
@@ -58,13 +78,29 @@ export async function loginUser(email: string, password: string): Promise<AuthRe
   try {
     const credential = await signInWithEmailAndPassword(auth, email, password)
     const token = await credential.user.getIdToken()
-    const user = await apiRequest<AuthUser>(`${BASE}/me`, {
-      method: 'GET',
-      headers: authHeaders(token),
-    })
-    return { token, user }
+
+    try {
+      const user = await apiRequest<AuthUser>(`${BASE}/me`, {
+        method: 'GET',
+        headers: authHeaders(token),
+      })
+      return { token, user }
+    } catch {
+      const fbUser = credential.user
+      return {
+        token,
+        user: buildFallbackUser(
+          fbUser.uid,
+          fbUser.email ?? email,
+          fbUser.displayName ?? email.split('@')[0],
+        ),
+      }
+    }
   } catch (err) {
-    throw new Error(firebaseErrorMessage(err))
+    if (err && typeof err === 'object' && 'code' in err) {
+      throw new Error(firebaseErrorMessage(err))
+    }
+    throw err
   }
 }
 
