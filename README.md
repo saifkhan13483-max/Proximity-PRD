@@ -1,6 +1,6 @@
 # Proximity Credit Repair
 
-A high-end, full-stack marketing and client portal website for **Proximity Credit Repair**. Built with React 18 + Vite + TypeScript on the frontend and Express.js + Node.js on the backend. Features a gold-and-dark luxury design system, JWT-based authentication, a protected client dashboard, and a full admin panel.
+A high-end, full-stack marketing website and client portal for **Proximity Credit Repair**. Built with React 18 + Vite + TypeScript on the frontend and Express.js + Node.js on the backend, powered by Firebase Authentication and Firestore. Features a gold-and-dark luxury design system, animated UI, a protected client dashboard, and a full admin panel.
 
 ---
 
@@ -8,18 +8,16 @@ A high-end, full-stack marketing and client portal website for **Proximity Credi
 
 ```
 Browser
-  └── Vercel (Frontend)
-        ├── /                → React SPA (index.html)
-        ├── /assets/*        → Hashed static assets (1-year immutable cache)
-        └── /api/*           → Proxy rewrite → Railway (Backend)
+  └── Replit Deployment
+        ├── /              → React SPA (Vite build, dist/)
+        ├── /assets/*      → Hashed static assets
+        └── /api/*         → Express.js backend (port 3001)
 
-Railway (Backend)
-  └── Node.js / Express
-        ├── /api/auth/*      → Register, Login, Me
-        ├── /api/contacts    → Contact form submissions
-        ├── /api/admin/*     → Admin dashboard routes (auth required)
-        ├── /api/users/plan  → Plan selection
-        └── /health          → Health check (Railway)
+Backend (Express.js)
+  ├── /api/auth/*          → Firebase Auth profile routes
+  ├── /api/contacts        → Contact form submissions (Firestore)
+  ├── /api/admin/*         → Admin dashboard routes (token-protected)
+  └── /api/users/plan      → Plan selection
 ```
 
 ---
@@ -29,16 +27,16 @@ Railway (Backend)
 | Layer | Technology |
 |---|---|
 | Frontend | React 18, Vite 5, TypeScript |
-| Styling | Tailwind CSS v3, Framer Motion v10 |
-| Routing | React Router v6 |
-| State | Zustand, TanStack Query |
+| Styling | Tailwind CSS v3 + shadcn/ui (Radix UI primitives) |
+| Animations | Framer Motion v10 |
+| Routing | React Router v6 (lazy-loaded routes) |
+| State | Zustand (persist middleware), TanStack Query |
 | Forms | React Hook Form + Zod |
 | Icons | Lucide React |
 | Backend | Node.js, Express.js |
-| Auth | JWT (jsonwebtoken), bcryptjs |
-| Storage | JSON files (users.json, contacts.json) |
-| Frontend Host | Vercel |
-| Backend Host | Railway |
+| Auth | Firebase Authentication (Client + Admin SDK) |
+| Database | Google Cloud Firestore |
+| Hosting | Replit (dev + production) |
 
 ---
 
@@ -46,31 +44,58 @@ Railway (Backend)
 
 ```
 proximity/
-├── frontend/                  # React + Vite SPA
-│   ├── src/
-│   │   ├── components/        # layout/, ui/, sections/, auth/
-│   │   ├── pages/             # All route-level page components
-│   │   ├── services/          # API calls (authService, adminService, etc.)
-│   │   ├── store/             # Zustand stores (authStore, uiStore)
-│   │   ├── data/              # Static content (plans, FAQs, testimonials)
-│   │   ├── hooks/             # useCountUp, useMediaQuery, useScrollPosition
-│   │   ├── lib/               # Utilities, animations, validators
-│   │   ├── config/            # Site metadata, navigation, theme
-│   │   └── types/             # TypeScript types
-│   ├── public/                # robots.txt, sitemap.xml, og-image.png
-│   ├── vite.config.ts
-│   ├── tailwind.config.js
-│   ├── .env.example
-│   └── package.json
-├── backend/                   # Express REST API
-│   ├── server.js              # Main entry point
-│   ├── users.json             # User data (ephemeral on Railway — see note)
-│   ├── contacts.json          # Contact submissions (ephemeral on Railway)
-│   ├── railway.toml           # Railway deployment config
-│   ├── Procfile               # Fallback process definition
-│   ├── .env.example
-│   └── package.json
-├── vercel.json                # Vercel deployment config
+├── src/
+│   ├── main.tsx                   # App entry — token refresh listener, ErrorBoundary
+│   ├── App.tsx                    # Router setup, lazy-loaded routes
+│   ├── components/
+│   │   ├── ErrorBoundary.tsx
+│   │   ├── admin/                 # AdminLayout
+│   │   ├── auth/                  # ProtectedRoute, AdminRoute
+│   │   ├── layout/                # AppLayout, Navbar, Footer, PageWrapper, Section, SEOHead
+│   │   ├── sections/              # HeroSection, ServicesPreview, HowItWorksStrip,
+│   │   │                          #   TestimonialsSlider, FinalCTABand
+│   │   └── ui/                    # Button, Card, Badge, Input, Select, Textarea,
+│   │                              #   Modal, Toast, LoadingScreen, SectionLabel, etc.
+│   ├── pages/
+│   │   ├── Home.tsx, About.tsx, Services.tsx
+│   │   ├── HowItWorks.tsx, Testimonials.tsx, FAQ.tsx
+│   │   ├── Contact.tsx, Pricing.tsx, NotFound.tsx
+│   │   ├── Login.tsx, Register.tsx, Dashboard.tsx
+│   │   └── admin/
+│   │       ├── AdminLogin.tsx, AdminDashboard.tsx
+│   │       ├── AdminUsers.tsx, AdminContacts.tsx
+│   ├── services/
+│   │   ├── authService.ts         # Firebase Auth — register, login, logout
+│   │   ├── adminService.ts        # Admin API — users, contacts, stats
+│   │   ├── contactService.ts      # Contact form submission
+│   │   ├── planService.ts         # Plan selection API
+│   │   └── api.ts                 # Base apiRequest helper
+│   ├── store/
+│   │   ├── authStore.ts           # Zustand auth state (persisted to localStorage)
+│   │   └── uiStore.ts, formStore.ts
+│   ├── lib/
+│   │   ├── firebase.ts            # Firebase SDK init (persistentLocalCache)
+│   │   ├── animations.ts, utils.ts, validators.ts
+│   ├── config/
+│   │   ├── siteMetadata.ts        # SEO metadata
+│   │   ├── navigation.ts          # Nav + footer links
+│   │   └── site.ts                # Phone, email, address
+│   ├── data/
+│   │   ├── services.ts            # 7 service definitions
+│   │   ├── testimonials.ts, faqs.ts, plans.ts, stats.ts, team.ts
+│   ├── hooks/                     # useCountUp, useMediaQuery
+│   └── styles/
+│       └── globals.css            # Tailwind base + shadcn CSS vars + brand vars
+├── backend/
+│   ├── server.js                  # Express entry (graceful shutdown)
+│   ├── app.js                     # Helmet, rate-limiting, compression, all routes
+│   ├── firebase.js                # Firebase Admin SDK init
+│   └── .env.example
+├── public/                        # favicon.svg, og-image.png, robots.txt, sitemap.xml
+├── index.html
+├── vite.config.ts                 # Proxy /api → :3001, Firebase env vars via define
+├── tailwind.config.js
+├── package.json
 └── README.md
 ```
 
@@ -97,90 +122,70 @@ proximity/
 
 ---
 
-## Running Locally
+## Services Offered
 
-### Prerequisites
-- Node.js 18+
-- npm
+The site showcases 7 credit repair services, each with a full description and key benefits:
 
-### 1. Clone the repo
-
-```bash
-git clone https://github.com/your-username/proximity-credit-repair.git
-cd proximity-credit-repair
-```
-
-### 2. Start the backend
-
-```bash
-cd backend
-cp .env.example .env        # fill in JWT_SECRET
-npm install
-node server.js              # Runs on http://localhost:3001
-```
-
-### 3. Start the frontend
-
-```bash
-cd frontend
-cp .env.example .env        # set VITE_API_URL=http://localhost:3001
-npm install
-npm run dev                 # Runs on http://localhost:5000
-```
-
-The Vite dev server proxies all `/api/*` requests to the backend automatically.
+1. **Credit Analysis** — Three-bureau review to identify all negative items and build a custom action plan
+2. **Dispute Filing** — Legally precise challenge letters to all three bureaus, fully managed
+3. **Score Monitoring** — Real-time alerts and monthly three-bureau progress reports
+4. **Debt Validation** — Certified validation requests to collectors under the FDCPA
+5. **Creditor Negotiation** — Pay-for-delete agreements, settlements, and goodwill removals (Premium/VIP)
+6. **Educational Resources** — Guides, video tutorials, and an interactive credit score simulator
+7. **Identity Theft Protection** — Dark web monitoring and dedicated recovery support (VIP)
 
 ---
 
-## Environment Variables
+## Design System
 
-### Backend (Railway)
-
-Create `backend/.env` based on `backend/.env.example`:
-
-| Variable | Required | Description |
-|---|---|---|
-| `JWT_SECRET` | **Yes** | Long random string for signing JWTs. Server refuses to start without it. |
-| `PORT` | No | Assigned automatically by Railway. Defaults to `3001` locally. |
-| `ALLOWED_ORIGINS` | **Yes** | Comma-separated list of allowed CORS origins (e.g. `https://your-app.vercel.app,http://localhost:5000`) |
-
-### Frontend (Vercel)
-
-Create `frontend/.env` based on `frontend/.env.example`:
-
-| Variable | Required | Description |
-|---|---|---|
-| `VITE_API_URL` | No | Backend base URL for Vite dev proxy. Defaults to `http://localhost:3001`. Not needed in Vercel production (handled by `vercel.json` rewrites). |
-| `VITE_SITE_URL` | Recommended | Canonical site URL for SEO / Open Graph meta tags. |
-| `VITE_ANALYTICS_ID` | No | Google Analytics 4 Measurement ID (e.g. `G-XXXXXXXXXX`). Leave blank to disable. |
+| Token | Value |
+|---|---|
+| Gold Primary | `#B8924A` |
+| Gold Light | `#D4AF72` |
+| Gold Dark | `#8B6A2E` |
+| Near Black | `#0A0A0A` |
+| Card Black | `#141414` |
+| Off White | `#F9F6F1` |
+| Heading Font | Montserrat |
+| Body Font | Open Sans |
 
 ---
 
-## Deployment
+## Running on Replit
 
-### Backend → Railway
+Two workflows run simultaneously:
 
-1. Go to [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub repo**
-2. Select your repository and set **Root Directory** to `backend`
-3. Under **Variables**, add:
-   - `JWT_SECRET` — a strong random secret
-   - `ALLOWED_ORIGINS` — your Vercel frontend URL + `http://localhost:5000`
-4. Railway uses `backend/railway.toml` automatically — no extra config needed
-5. Under **Settings → Networking**, click **Generate Domain** to get your public URL
-6. Verify: `https://your-app.up.railway.app/health` should return `{"status":"ok",...}`
+| Workflow | Command | Port |
+|---|---|---|
+| Start application | `npm run dev` | 5000 |
+| Auth API | `node backend/server.js` | 3001 |
 
-### Frontend → Vercel
+Vite proxies all `/api/*` requests from port 5000 → 3001 automatically.
 
-1. Open `vercel.json` at the project root and replace `https://your-railway-backend.up.railway.app` with your actual Railway URL
-2. Commit and push the change
-3. Go to [vercel.com](https://vercel.com) → **Add New Project** → select your repo
-4. Vercel auto-detects `vercel.json` settings (root: `frontend`, build: `npm run build`, output: `dist`)
-5. Under **Environment Variables**, add `VITE_SITE_URL` and optionally `VITE_ANALYTICS_ID`
-6. Click **Deploy**
+---
 
-### Connect them
+## Environment Variables (Replit Secrets)
 
-After both are deployed, go back to Railway → **Variables** and update `ALLOWED_ORIGINS` to include your live Vercel URL.
+### Backend — Firebase Admin SDK
+
+| Secret | Description |
+|---|---|
+| `FIREBASE_SERVICE_ACCOUNT_JSON` | Full service account JSON blob (recommended) |
+| `ADMIN_EMAIL` | Email for the seeded admin account |
+| `ADMIN_PASSWORD` | Password for the seeded admin account |
+
+> Alternatively, set `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, and `FIREBASE_PRIVATE_KEY` individually instead of the JSON blob.
+
+### Frontend — Firebase Client SDK
+
+| Secret | Description |
+|---|---|
+| `apiKey` | Firebase Web API key |
+| `authDomain` | Firebase Auth domain |
+| `projectId` | Firebase project ID |
+| `storageBucket` | Firebase storage bucket |
+| `messagingSenderId` | Firebase messaging sender ID |
+| `appId` | Firebase App ID |
 
 ---
 
@@ -190,27 +195,26 @@ After both are deployed, go back to Railway → **Variables** and update `ALLOWE
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| POST | `/api/auth/register` | No | Create a new user account |
-| POST | `/api/auth/login` | No | Login and receive a JWT |
-| GET | `/api/auth/me` | Bearer token | Get the current user's profile |
+| POST | `/api/auth/profile` | Bearer token | Create or update user profile in Firestore |
+| GET | `/api/auth/me` | Bearer token | Fetch current user profile |
 
 ### Contact
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| POST | `/api/contacts` | No | Submit the contact form |
+| POST | `/api/contacts` | No | Submit the contact form (stored in Firestore) |
 
 ### User
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| POST | `/api/users/plan` | Bearer token | Select / upgrade a plan |
+| POST | `/api/users/plan` | Bearer token | Select or upgrade a plan |
 
 ### Admin
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/api/admin/stats` | Admin | Dashboard stats |
+| GET | `/api/admin/stats` | Admin | Dashboard stats (users, leads, plan distribution) |
 | GET | `/api/admin/users` | Admin | List all non-admin users |
 | PATCH | `/api/admin/users/:id` | Admin | Update user plan or credit score |
 | DELETE | `/api/admin/users/:id` | Admin | Delete a user |
@@ -218,30 +222,22 @@ After both are deployed, go back to Railway → **Variables** and update `ALLOWE
 | PATCH | `/api/admin/contacts/:id` | Admin | Update contact status |
 | DELETE | `/api/admin/contacts/:id` | Admin | Delete a contact submission |
 
-### Health
+---
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| GET | `/health` | No | Railway health check |
-| GET | `/api/health` | No | Health check (alternate path) |
+## Security
+
+- `helmet` — X-Frame-Options, X-Content-Type-Options, HSTS, and other security headers
+- `express-rate-limit` — Auth: 20 req/15min · Contact: 10 req/hour · General: 200 req/15min
+- `compression` — gzip for all responses
+- Firebase Admin SDK — all protected routes verify Firebase ID tokens server-side
+- Automatic token refresh — `onIdTokenChanged` listener keeps the Zustand store token current
+- CORS — restricts origins to `.replit.dev`, `.replit.app`, and `ALLOWED_ORIGINS`
+- Admin seeded via env vars — never hardcoded
 
 ---
 
-## Default Admin Account
+## Notes
 
-The admin account is automatically seeded on every backend startup:
-
-| Field | Value |
-|---|---|
-| Email | `admin@proximity.com` |
-| Password | `Admin@2026!` |
-
-> **Change this password immediately after your first login in production.**
-
----
-
-## Important Notes
-
-- **Ephemeral storage:** Railway's filesystem resets on every deploy. `users.json` and `contacts.json` will be wiped. The admin account is re-seeded automatically on startup, but all other user and contact data will be lost. Migrate to Railway's PostgreSQL plugin for durable production storage.
-- **JWT_SECRET:** The backend will refuse to start if `JWT_SECRET` is not set. Never use a weak or default secret in production.
-- **Framer Motion:** Pinned to v10 — v11+ has a dist structure incompatibility with Vite.
+- Framer Motion is pinned to v10 — v11+ has a dist structure incompatibility with Vite
+- Firestore uses `persistentLocalCache` with `persistentMultipleTabManager` for multi-tab offline support
+- `v7_startTransition` future flag is set on `RouterProvider` to suppress the React Router v7 migration warning
