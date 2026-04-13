@@ -19,9 +19,7 @@ proximity/
 ├── backend/
 │   ├── server.js              # Express API — all routes, middleware, admin seed
 │   ├── firebase.js            # Firebase Admin SDK init — exports db + adminAuth
-│   ├── package.json
-│   ├── PRD.md
-│   └── AI_BUILD_PROMPT.md
+│   └── package.json
 ├── frontend/
 │   ├── src/
 │   │   ├── main.tsx           # App entry point
@@ -95,16 +93,23 @@ proximity/
 │   │   │   ├── useCountUp.ts, useMediaQuery.ts, useScrollPosition.ts
 │   │   │   └── index.ts
 │   │   ├── types/
-│   │   │   ├── index.ts, component-props.ts
+│   │   │   └── index.ts, component-props.ts
 │   │   └── styles/
 │   │       └── globals.css
 │   ├── index.html
 │   ├── vite.config.ts             # Vite config — maps Replit secrets to FB constants via define
 │   ├── tailwind.config.js
 │   ├── postcss.config.js
+│   ├── eslint.config.js
 │   ├── tsconfig.json
 │   └── tsconfig.node.json
-├── FIRESTORE_MIGRATION.md         # Step-by-step Firestore migration reference
+├── docs/
+│   ├── DEPLOYMENT.md              # Deployment guide and environment setup
+│   ├── FIRESTORE_MIGRATION.md     # Firestore migration reference
+│   ├── PRD.md                     # Product requirements document
+│   └── AI_BUILD_PROMPT.md         # Original AI build specification
+├── .env.example
+├── vercel.json
 ├── .gitignore
 ├── README.md
 └── replit.md
