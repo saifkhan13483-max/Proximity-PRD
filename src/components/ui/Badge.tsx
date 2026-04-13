@@ -10,7 +10,7 @@ interface BadgeProps {
 const variantClasses = {
   gold: 'bg-gold-primary text-white rounded-pill font-heading font-bold',
   success: 'bg-green-500 text-white rounded-pill font-bold',
-  neutral: 'bg-gray-100 text-muted-text rounded-pill',
+  neutral: 'bg-white/10 text-white/70 border border-white/20 rounded-pill',
 }
 
 const sizeClasses = {
