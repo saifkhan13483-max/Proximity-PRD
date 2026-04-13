@@ -1,13 +1,19 @@
 {
-  "name": "workspace",
+  "name": "proximity-credit-repair",
   "version": "1.0.0",
-  "description": "A high-end, full-stack marketing and client portal website for **Proximity Credit Repair**. Built with React 18 + Vite + TypeScript on the frontend and Express.js + Node.js on the backend. Features a gold-and-dark luxury design system, JWT-based authentication, a protected client dashboard, and a full admin panel.",
+  "description": "Proximity Credit Repair — full-stack app (React + Vite frontend, Express backend as Vercel serverless functions)",
   "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
   "scripts": {
+    "build": "npm run build --prefix frontend",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "firebase-admin": "^13.8.0",
+    "jsonwebtoken": "^9.0.3",
+    "uuid": "^7.0.0"
   },
   "keywords": [],
   "author": "",
