@@ -83,13 +83,18 @@ const ADMIN_PASSWORD = 'saifkhan13483@gmail.com'
 
 async function seedAdmin() {
   let users = loadUsers()
-  const existingAdmin = users.find((u) => u.role === 'admin')
+  const existingAdmin = users.find((u) => u.role === 'admin' && u.email.toLowerCase() === ADMIN_EMAIL.toLowerCase())
 
-  if (existingAdmin && existingAdmin.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+  if (existingAdmin) {
+    const duplicates = users.filter((u) => u.email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && u.id !== existingAdmin.id)
+    if (duplicates.length > 0) {
+      users = users.filter((u) => !(u.email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && u.id !== existingAdmin.id))
+      saveUsers(users)
+    }
     return
   }
 
-  users = users.filter((u) => u.role !== 'admin')
+  users = users.filter((u) => u.role === 'admin' ? false : u.email.toLowerCase() !== ADMIN_EMAIL.toLowerCase())
   const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 12)
   users.push({
     id: uuidv4(),
@@ -137,6 +142,9 @@ app.post('/api/auth/register', async (req, res) => {
       return res.status(400).json({ error: 'Password must be at least 8 characters' })
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       return res.status(400).json({ error: 'Invalid email address' })
+
+    if (email.toLowerCase().trim() === ADMIN_EMAIL.toLowerCase())
+      return res.status(409).json({ error: 'An account with this email already exists' })
 
     const users = loadUsers()
     if (users.find((u) => u.email.toLowerCase() === email.toLowerCase()))
